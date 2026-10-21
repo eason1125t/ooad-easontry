@@ -27,9 +27,9 @@ def digest(path):
 def inputs():
     """Visit only reviewed source/document folders, never dependency directories."""
     selected = {ROOT / 'README.md', ROOT / '.gitignore', ROOT / 'backend/pom.xml',
-                ROOT / 'backend/mvnw', ROOT / 'backend/mvnw.cmd'}
+                ROOT / 'backend/mvnw', ROOT / 'backend/mvnw.cmd', ROOT / 'document-system/pom.xml'}
     for folder in ('backend/src', 'backend/.mvn', 'frontend/src', 'frontend/test',
-                   'database', 'docs'):
+                   'database', 'docs', 'document-system/src'):
         selected.update(path for path in (ROOT / folder).rglob('*') if path.is_file())
     selected.update(ROOT / 'frontend' / name for name in FRONTEND_FILES)
     selected.update(path for path in (ROOT / 'scripts').iterdir()

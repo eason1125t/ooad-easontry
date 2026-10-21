@@ -41,8 +41,4 @@ public class ManagementController {
         check(request,"employees:read"); return processes.employees(page, q);
     }
     @GetMapping("/organizations") public Object organizations(HttpServletRequest request) { check(request,"employees:read"); return db.list("SELECT id,name,parent_id FROM organization ORDER BY id"); }
-    @GetMapping("/demo/documents") public Object documents(HttpServletRequest request) {
-        check(request,"demo.documents:read");
-        return Map.of("items", java.util.List.of(Map.of("id","DOC-001","title","道路养护周报（合成）","department","演示办公室","status","已归档"),Map.of("id","DOC-002","title","桥梁巡检计划（合成）","department","演示项目组","status","待评阅")));
-    }
 }

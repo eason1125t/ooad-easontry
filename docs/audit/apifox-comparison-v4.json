@@ -1,0 +1,43 @@
+{
+  "checked_on": "2026-10-22T00:18:07+08:00",
+  "project_id": "8950931",
+  "branch": "main",
+  "module_id": "8752957",
+  "source_sha256": "843a71faa43d493efb70861b0bb364cfb073a3f0a8e7ed2db4aca606c15ae8dd",
+  "export_sha256": "fb582730f8d1e242109f89a8b48b77fa7470556c1c005daee6ffad426d0f1ad7",
+  "source_file": "docs\\api\\openapi.json",
+  "export_file": "docs\\audit\\apifox-export-v4-verified.json",
+  "operations": 30,
+  "schemas": 32,
+  "compared_operation_fields": [
+    "operationId",
+    "summary",
+    "description",
+    "parameters",
+    "requestBody",
+    "responses",
+    "security",
+    "x-requirement-id",
+    "x-required-permission",
+    "x-implementation-status"
+  ],
+  "ignored_export_normalization": [
+    "info/module title and version",
+    "OpenAPI 3.0 patch version",
+    "optional false flags",
+    "empty containers",
+    "empty description/example",
+    "array ordering",
+    "retained unreferenced authentication components (reported separately; referenced definitions and resolution always checked)"
+  ],
+  "differences": [],
+  "referenced_security_schemes": [
+    "MuniBusinessApplicationKeyV4",
+    "MuniManagementSessionV4"
+  ],
+  "retained_unreferenced_security_schemes": [
+    "ApplicationKey",
+    "SessionCookie1"
+  ],
+  "result": "passed"
+}

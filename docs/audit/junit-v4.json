@@ -1,0 +1,72 @@
+{
+  "result": "passed",
+  "suites": [
+    {
+      "module": "backend",
+      "suite": "edu.municipal.access.AuthorizationIntegrationTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "timestamp": null,
+      "cases": [
+        "mixedForeignOrManagementScopeFailsWholeBatch",
+        "unavailableEmployeesHaveNoExistenceOracle",
+        "credentialsCannotBeSubstitutedByCookiesOrSpoofedHeaders",
+        "batchSizesOneAndFiftyWorkWhileInvalidInputsFailTogether",
+        "mixedResultsDoNotRequireAnEmployeeAccount",
+        "expiredKeyAndDisabledApplicationAreRejected",
+        "batchRetainsOneSnapshotWhileFollowingBatchSeesCommittedRevocation",
+        "roleAndResourceStateAffectDecisions",
+        "businessAndManagementGrantBoundariesRollback",
+        "unionRevocationAndRestoreAffectFollowingRequests"
+      ],
+      "report_sha256": "56bc20b802e2cc2b0949e8c78a290071adb45dd079125fbbbb47a4c394d42b87"
+    },
+    {
+      "module": "backend",
+      "suite": "edu.municipal.access.RbacIntegrationTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "timestamp": null,
+      "cases": [
+        "sessionExpiryIsAbsoluteAtExactly1800Seconds",
+        "invalidGrantRollsBackVersionAndRelationships",
+        "loginAndMeReturnTheSameExpiryAtDatabasePrecision",
+        "grantsAreUnionedAndRevocationAffectsTheNextRequest",
+        "lastAdministratorCannotBeDisabledAndChangesRollBack",
+        "anonymousAndSpoofedIdentityAreRejected",
+        "employeeCannotBeAssignedToTwoAccounts",
+        "lastAdministratorPermissionsCannotBeReplacedWithEmptySet",
+        "employeeLookupSupportsPaginationAndRejectsOversizedSearch",
+        "logoutInvalidatesTheDatabaseSession",
+        "ordinaryAccountCannotReadManagementAndCsrfIsRequired",
+        "managementRoleCannotReceiveBusinessPermission",
+        "employeeLookupMasksSourceNamesAndReportsExistingAssociation",
+        "queryParametersAreBoundRatherThanConcatenated",
+        "concurrentWritesCannotSilentlyOverwrite"
+      ],
+      "report_sha256": "b450b2318ebb61e16d31a74ca96fadf3d05047766fe5a1919b5e31314277308f"
+    },
+    {
+      "module": "document-system",
+      "suite": "edu.municipal.documents.DocumentIntegrationTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "timestamp": null,
+      "cases": [
+        "revokeAfterPageLoadRefusesWriteWithoutChangingVersionOrAudit",
+        "allowedWriteCommitsAndEveryOperationChecksAgain",
+        "missingDuplicateWrongIdentityAndServerErrorFailClosed",
+        "arbitraryEmployeeAndForeignOriginCannotCreateBusinessIdentity",
+        "businessVersionConflictAndCsrfAreEnforced",
+        "timeoutDoesNotWriteOrRetry"
+      ],
+      "report_sha256": "38c386fff739c5da8963f74f52ec1590e5d7736bba0aa1afae1f9e26bc625d0a"
+    }
+  ]
+}

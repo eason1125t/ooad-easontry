@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "市政统一权限管理 API",
-    "version": "0.1.0",
-    "description": "RBAC0 本机实现。管理 API 除具体权限外还要求 platform:access；正式数据范围过滤不在本轮实现。"
+    "version": "0.2.0",
+    "description": "管理员专用平台与员工业务授权；外部后端以独立应用密钥批量鉴权。公文业务由独立服务执行。"
   },
   "servers": [
     {
@@ -237,7 +237,7 @@
         "description": "固定 1800 秒绝对会话；请求不续期。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -341,7 +341,7 @@
         "description": "固定 1800 秒绝对会话；请求不续期。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -442,7 +442,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -543,7 +543,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -670,7 +670,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -791,7 +791,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -922,7 +922,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -1053,7 +1053,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -1155,7 +1155,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -1276,7 +1276,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -1407,7 +1407,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -1509,7 +1509,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -1630,7 +1630,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -1761,7 +1761,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -1863,7 +1863,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -1984,7 +1984,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -2115,7 +2115,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -2225,7 +2225,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -2356,7 +2356,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -2466,7 +2466,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -2597,7 +2597,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -2709,7 +2709,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -2829,7 +2829,7 @@
         "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -2920,20 +2920,20 @@
         "parameters": []
       }
     },
-    "/api/demo/documents": {
+    "/api/employees/{id}/roles": {
       "get": {
         "operationId": "operation26",
-        "summary": "读取受保护的合成文档",
+        "summary": "读取员工业务角色及版本",
         "tags": [
-          "demo"
+          "employees"
         ],
-        "x-requirement-id": "FR-13",
-        "x-required-permission": "demo.documents:read",
+        "x-requirement-id": "D-24",
+        "x-required-permission": "grants:read",
         "x-implementation-status": "implemented; verification tracked in docs/测试与验收.md",
-        "description": "固定 1800 秒绝对会话；请求不续期。",
+        "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
         "security": [
           {
-            "SessionCookie": []
+            "MuniManagementSessionV4": []
           }
         ],
         "responses": {
@@ -2942,7 +2942,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Documents"
+                  "$ref": "#/components/schemas/Grants"
                 }
               }
             }
@@ -3018,16 +3018,495 @@
             }
           }
         },
-        "parameters": []
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "operation27",
+        "summary": "替换员工业务角色",
+        "tags": [
+          "employees"
+        ],
+        "x-requirement-id": "D-24",
+        "x-required-permission": "grants:write",
+        "x-implementation-status": "implemented; verification tracked in docs/测试与验收.md",
+        "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
+        "security": [
+          {
+            "MuniManagementSessionV4": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Saved"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求格式、字段或层级无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证、会话过期或账号不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无操作权限、CSRF 或来源校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "引用对象不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "唯一约束、版本冲突或最后管理员保护",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "登录尝试频率受限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败，不返回内部细节",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "从登录或 /me 响应获得，须与当前会话一致。"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Grants"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/employees/{id}/permissions": {
+      "get": {
+        "operationId": "operation28",
+        "summary": "读取员工有效业务权限",
+        "tags": [
+          "employees"
+        ],
+        "x-requirement-id": "D-24",
+        "x-required-permission": "grants:read",
+        "x-implementation-status": "implemented; verification tracked in docs/测试与验收.md",
+        "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
+        "security": [
+          {
+            "MuniManagementSessionV4": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Effective"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求格式、字段或层级无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证、会话过期或账号不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无操作权限、CSRF 或来源校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "引用对象不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "唯一约束、版本冲突或最后管理员保护",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "登录尝试频率受限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败，不返回内部细节",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
+          }
+        ]
+      }
+    },
+    "/api/employees/{id}": {
+      "put": {
+        "operationId": "operation29",
+        "summary": "更新员工有效状态",
+        "tags": [
+          "employees"
+        ],
+        "x-requirement-id": "D-24",
+        "x-required-permission": "grants:write",
+        "x-implementation-status": "implemented; verification tracked in docs/测试与验收.md",
+        "description": "管理操作还要求 platform:access。权限按服务端实时计算。",
+        "security": [
+          {
+            "MuniManagementSessionV4": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Saved"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求格式、字段或层级无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未认证、会话过期或账号不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无操作权限、CSRF 或来源校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "引用对象不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "唯一约束、版本冲突或最后管理员保护",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "登录尝试频率受限",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败，不返回内部细节",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "从登录或 /me 响应获得，须与当前会话一致。"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/authorization/check": {
+      "post": {
+        "operationId": "operation30",
+        "summary": "应用身份批量鉴权",
+        "tags": [
+          "authorization"
+        ],
+        "x-requirement-id": "D-25",
+        "x-required-permission": "application",
+        "x-implementation-status": "implemented; verification tracked in docs/测试与验收.md",
+        "description": "仅供可信业务后端调用。单员工 1–50 个精确权限；逐项结果；跨应用整批 403；无缓存；同批一致性读取。无管理员 Cookie 或 CSRF 替代路径。",
+        "security": [
+          {
+            "MuniBusinessApplicationKeyV4": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "批量请求无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "应用凭据无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizationError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "应用范围越界或浏览器来源",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizationError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "鉴权数据不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizationError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "内部处理失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizationError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorizationCheck"
+              }
+            }
+          }
+        }
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "SessionCookie": {
+      "MuniManagementSessionV4": {
         "type": "apiKey",
         "in": "cookie",
         "name": "MUNI_SESSION"
+      },
+      "MuniBusinessApplicationKeyV4": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-App-Key"
       }
     },
     "schemas": {
@@ -3207,6 +3686,14 @@
           "description": {
             "type": "string",
             "maxLength": 300
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "MANAGEMENT",
+              "BUSINESS"
+            ],
+            "default": "BUSINESS"
           }
         },
         "required": [
@@ -3233,6 +3720,14 @@
             "type": "integer",
             "format": "int64",
             "minimum": 0
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "MANAGEMENT",
+              "BUSINESS"
+            ],
+            "description": "若提交必须与原用途一致"
           }
         },
         "required": [
@@ -3515,6 +4010,13 @@
             "type": "integer",
             "format": "int64",
             "minimum": 0
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "MANAGEMENT",
+              "BUSINESS"
+            ]
           }
         },
         "required": [
@@ -3523,7 +4025,8 @@
           "name",
           "enabled",
           "version",
-          "grantsVersion"
+          "grantsVersion",
+          "purpose"
         ]
       },
       "Resource": {
@@ -3599,6 +4102,9 @@
             "type": "integer",
             "format": "int64",
             "minimum": 0
+          },
+          "applicationCode": {
+            "type": "string"
           }
         },
         "required": [
@@ -3632,12 +4138,28 @@
             "minimum": 1,
             "nullable": true,
             "description": "员工查询时返回已关联账号 ID；为空或省略表示未关联。身份接口可省略。"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "grantsVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
           }
         },
         "required": [
           "id",
           "label",
-          "organizationName"
+          "organizationName",
+          "enabled",
+          "version",
+          "grantsVersion"
         ]
       },
       "Organization": {
@@ -3663,27 +4185,119 @@
           "name"
         ]
       },
-      "Document": {
+      "EmployeeUpdate": {
         "type": "object",
         "properties": {
-          "id": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "enabled",
+          "version"
+        ]
+      },
+      "AuthorizationCheck": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "permissionCodes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9._-]{1,99}:[a-z][a-z0-9._-]{1,39}$",
+              "maxLength": 141
+            },
+            "minItems": 1,
+            "maxItems": 50,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "employeeId",
+          "permissionCodes"
+        ],
+        "additionalProperties": false
+      },
+      "AuthorizationResult": {
+        "type": "object",
+        "properties": {
+          "permissionCode": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._-]{1,99}:[a-z][a-z0-9._-]{1,39}$",
+            "maxLength": 141
+          },
+          "allowed": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "ALLOWED",
+              "NO_PERMISSION",
+              "EMPLOYEE_UNAVAILABLE"
+            ]
+          }
+        },
+        "required": [
+          "permissionCode",
+          "allowed",
+          "reason"
+        ]
+      },
+      "AuthorizationResponse": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorizationResult"
+            },
+            "minItems": 1,
+            "maxItems": 50
+          },
+          "requestId": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          }
+        },
+        "required": [
+          "employeeId",
+          "results",
+          "requestId"
+        ]
+      },
+      "AuthorizationError": {
+        "type": "object",
+        "properties": {
+          "code": {
             "type": "string"
           },
-          "title": {
+          "message": {
             "type": "string"
           },
-          "department": {
-            "type": "string"
-          },
-          "status": {
+          "requestId": {
             "type": "string"
           }
         },
         "required": [
-          "id",
-          "title",
-          "department",
-          "status"
+          "code",
+          "message",
+          "requestId"
         ]
       },
       "AccountPage": {
@@ -3740,20 +4354,6 @@
           "total",
           "page",
           "pageSize"
-        ]
-      },
-      "Documents": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Document"
-            }
-          }
-        },
-        "required": [
-          "items"
         ]
       },
       "RoleSummary": {

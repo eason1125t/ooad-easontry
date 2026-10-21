@@ -1,0 +1,17 @@
+{
+  "result": "passed",
+  "sources": [
+    {
+      "file": "市政公司部门信息表.xlsx",
+      "sha256_unchanged": true
+    },
+    {
+      "file": "市政公司员工信息表.xlsx",
+      "sha256_unchanged": true
+    },
+    {
+      "file": "市政公司应用软件功能权限清单(1).xlsx",
+      "sha256_unchanged": true
+    }
+  ]
+}

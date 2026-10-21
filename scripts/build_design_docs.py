@@ -11,6 +11,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / 'docs'
+VERSION_NOTE = '> 适用版本：员工业务授权与独立公文系统接入版本（Flyway V4）。执行结果见[跨系统验收记录](公文系统接入验收记录.md)，历史版本另行保留。'
 
 
 def prop(kind, **values):
@@ -59,11 +60,28 @@ def ref(name):
     return {'$ref': '#/components/schemas/' + name}
 
 
+schemas['RoleCreate']['properties']['purpose'] = prop('string', enum=['MANAGEMENT','BUSINESS'], default='BUSINESS')
+schemas['RoleUpdate']['properties']['purpose'] = prop('string', enum=['MANAGEMENT','BUSINESS'], description='若提交必须与原用途一致')
+schemas['Role']['properties']['purpose'] = prop('string', enum=['MANAGEMENT','BUSINESS'])
+schemas['Role']['required'].append('purpose')
+schemas['Permission']['properties']['applicationCode'] = prop('string')
+schemas['Employee']['properties'].update({'enabled': BOOL, 'version': VERSION, 'grantsVersion': VERSION})
+schemas['Employee']['required'] += ['enabled','version','grantsVersion']
+schemas['EmployeeUpdate'] = obj({'enabled': BOOL, 'version': VERSION}, ['enabled','version'])
+check_code = prop('string', pattern='^[a-z][a-z0-9._-]{1,99}:[a-z][a-z0-9._-]{1,39}$', maxLength=141)
+schemas['AuthorizationCheck'] = {**obj({'employeeId': ID, 'permissionCodes': prop('array',items=check_code,minItems=1,maxItems=50,uniqueItems=True)}, ['employeeId','permissionCodes']), 'additionalProperties': False}
+schemas['AuthorizationResult'] = obj({'permissionCode': check_code, 'allowed': BOOL, 'reason':prop('string',enum=['ALLOWED','NO_PERMISSION','EMPLOYEE_UNAVAILABLE'])}, ['permissionCode','allowed','reason'])
+schemas['AuthorizationResponse'] = obj({'employeeId':ID, 'results':prop('array',items=ref('AuthorizationResult'),minItems=1,maxItems=50), 'requestId':prop('string',pattern='^[a-f0-9]{32}$')}, ['employeeId','results','requestId'])
+schemas['AuthorizationError'] = obj({'code':prop('string'),'message':prop('string'),'requestId':prop('string')}, ['code','message','requestId'])
+
 schemas['AccountPage'] = obj({'items': prop('array',items=ref('Account')), 'total':prop('integer'), 'page':prop('integer'), 'pageSize':prop('integer')}, ['items','total','page','pageSize'])
 schemas['EmployeePage'] = obj({'items':prop('array',items=ref('Employee')),'total':prop('integer'),'page':prop('integer',minimum=1),'pageSize':prop('integer',enum=[100])}, ['items','total','page','pageSize'])
 schemas['Documents'] = obj({'items':prop('array',items=ref('Document'))}, ['items'])
 schemas['RoleSummary'] = obj({'id':ID,'code':prop('string'),'name':NAME,'enabled':BOOL}, ['id','code','name','enabled'])
 schemas['Me'] = obj({'id':ID,'username':prop('string'),'displayName':NAME,'employeeId':{**ID,'nullable':True},'employee':ref('Employee'),'roles':prop('array',items=ref('RoleSummary')),'permissions':prop('array',items=prop('string')),'csrfToken':prop('string'),'expiresAt':prop('string',format='date-time')}, ['id','username','displayName','roles','permissions','csrfToken','expiresAt'])
+
+schemas.pop('Document', None)
+schemas.pop('Documents', None)
 
 # method, path, summary, permission, requirement, request schema, response schema
 operations = [
@@ -92,9 +110,13 @@ operations = [
  ('get','/accounts/{id}/permissions','计算指定账号的有效权限','grants:read','FR-06',None,'Effective'),
  ('get','/employees','分页读取脱敏员工关联选项','employees:read','FR-08',None,'EmployeePage'),
  ('get','/organizations','读取组织树节点','employees:read','FR-08',None,'Organization[]'),
- ('get','/demo/documents','读取受保护的合成文档','demo.documents:read','FR-13',None,'Documents'),
+ ('get','/employees/{id}/roles','读取员工业务角色及版本','grants:read','D-24',None,'Grants'),
+ ('put','/employees/{id}/roles','替换员工业务角色','grants:write','D-24','Grants','Saved'),
+ ('get','/employees/{id}/permissions','读取员工有效业务权限','grants:read','D-24',None,'Effective'),
+ ('put','/employees/{id}','更新员工有效状态','grants:write','D-24','EmployeeUpdate','Saved'),
+ ('post','/authorization/check','应用身份批量鉴权','application','D-25','AuthorizationCheck','AuthorizationResponse'),
 ]
-contract = {'openapi':'3.0.3','info':{'title':'市政统一权限管理 API','version':'0.1.0','description':'RBAC0 本机实现。管理 API 除具体权限外还要求 platform:access；正式数据范围过滤不在本轮实现。'},'servers':[{'url':'http://localhost:8080','description':'本机开发'}],'paths':{},'components':{'securitySchemes':{'SessionCookie':{'type':'apiKey','in':'cookie','name':'MUNI_SESSION'}},'schemas':schemas}}
+contract = {'openapi':'3.0.3','info':{'title':'市政统一权限管理 API','version':'0.2.0','description':'管理员专用平台与员工业务授权；外部后端以独立应用密钥批量鉴权。公文业务由独立服务执行。'},'servers':[{'url':'http://localhost:8080','description':'本机开发'}],'paths':{},'components':{'securitySchemes':{'SessionCookie':{'type':'apiKey','in':'cookie','name':'MUNI_SESSION'},'ApplicationKey':{'type':'apiKey','in':'header','name':'X-App-Key'}},'schemas':schemas}}
 for index,(method,path,summary,permission,requirement,body,response) in enumerate(operations,1):
     secured = permission is not None
     operation={'operationId':f'operation{index:02}','summary':summary,'tags':[path.split('/')[1]],'x-requirement-id':requirement,'x-required-permission':permission or 'public','x-implementation-status':'implemented; verification tracked in docs/测试与验收.md','description':'管理操作还要求 platform:access。权限按服务端实时计算。' if permission not in (None,'authenticated') and not permission.startswith('demo.') else '固定 1800 秒绝对会话；请求不续期。','security':[{'SessionCookie':[]}] if secured else [],'responses':{}}
@@ -112,20 +134,31 @@ for index,(method,path,summary,permission,requirement,body,response) in enumerat
     for code,description in [('400','请求格式、字段或层级无效'),('401','未认证、会话过期或账号不可用'),('403','无操作权限、CSRF 或来源校验失败'),('404','引用对象不存在'),('409','唯一约束、版本冲突或最后管理员保护'),('429','登录尝试频率受限'),('500','内部处理失败，不返回内部细节')]:
         operation['responses'][code]={'description':description,'content':{'application/json':{'schema':ref('Error')}}}
     if path=='/session/login': operation['responses']['200']['headers']={'Set-Cookie':{'schema':prop('string'),'description':'MUNI_SESSION; Path=/api; HttpOnly; SameSite=Strict; Max-Age=1800。本机 HTTP 不设 Secure；HTTPS 部署必须开启。'}}
+    if path == '/authorization/check':
+        operation['security'] = [{'ApplicationKey':[]}]
+        operation['parameters'] = []
+        operation['description'] = '仅供可信业务后端调用。单员工 1–50 个精确权限；逐项结果；跨应用整批 403；无缓存；同批一致性读取。无管理员 Cookie 或 CSRF 替代路径。'
+        operation['responses'] = {'200': operation['responses']['200'], **{status:{'description':label,'content':{'application/json':{'schema':ref('AuthorizationError')}}} for status,label in [('400','批量请求无效'),('401','应用凭据无效'),('403','应用范围越界或浏览器来源'),('503','鉴权数据不可用'),('500','内部处理失败')]}}
     contract['paths'].setdefault('/api'+path,{})[method]=operation
 (DOCS/'api').mkdir(exist_ok=True)
+# Project-wide Apifox component names must be unique across preserved historical modules.
+auth_names = {'SessionCookie': 'MuniManagementSessionV4', 'ApplicationKey': 'MuniBusinessApplicationKeyV4'}
+contract['components']['securitySchemes'] = {auth_names[name]: value for name, value in contract['components']['securitySchemes'].items()}
+for item in contract['paths'].values():
+    for operation in item.values():
+        operation['security'] = [{auth_names[name]: scopes for name, scopes in requirement.items()} for requirement in operation['security']]
 (DOCS/'api/openapi.json').write_text(json.dumps(contract,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-lines=['# HTTP API 设计与实现映射','','本地权威契约：`docs/api/openapi.json`（OpenAPI 3.0.3）。HTTP JSON 接口与 Java 内部过程分别描述。实现及验证状态以《测试与验收》为准；Apifox 回读状态另记录，不能以导入后的平台默认状态代替测试。','','## 接口清单','','| 方法 | 路径（前缀 /api） | 用途 | 权限 | 需求 |','| --- | --- | --- | --- | --- |']
+lines=['# HTTP API 设计与实现映射','',VERSION_NOTE,'','本地权威契约：`docs/api/openapi.json`（OpenAPI 3.0.3）。HTTP JSON 接口与 Java 内部过程分别描述。实现及验证状态以《测试与验收》为准；Apifox 回读状态另记录，不能以导入后的平台默认状态代替测试。','','## 接口清单','','| 方法 | 路径（前缀 /api） | 用途 | 权限 | 需求 |','| --- | --- | --- | --- | --- |']
 for method,path,summary,permission,requirement,_,_ in operations: lines.append(f'| {method.upper()} | `{path}` | {summary} | `{permission or "公开"}` | {requirement} |')
-lines += ['','## 共用契约','','- 所有业务接口均受服务端保护；管理 API 同时要求 platform:access 和具体操作权限。没有用户名或中文角色名绕过。','- 登录 JSON 返回当前身份、有效权限、CSRF 和 expiresAt；Cookie 只在登录或退出时设置，绝对有效期 1800 秒不续期。退出、停用、锁定及密码重置使相关会话失效。','- 写请求携带 X-CSRF-Token；本机浏览器来源仅允许 localhost/127.0.0.1 的 8080、5173、4173 端口；不开放跨域凭据访问。Apifox 非浏览器请求可不带 Origin，但仍需 Cookie 和 CSRF。','- 401 表示未认证或会话不可用，403 表示当前身份无权或 CSRF/来源校验失败，409 表示版本或数据冲突。错误体为 code、message，不包含 SQL、密码或栈。','- 账号分页 page 从 1 开始，pageSize 1–100，默认 20；后端将越界分页值夹到允许范围。员工选项每页 100 条，只显示脱敏标签。','- 代码仅用小写字母、数字、点、短横线、下划线；更新不改变稳定编码。资源严格分为应用、模块、功能点；操作权限仅能属于功能点。','- 更新实体提交 version；替换授权提交独立的 grantsVersion（请求字段名为 version）。关系 ID 不得重复；全量替换在一个事务内执行，校验失败回滚。','- 员工 ID 可为空；一个员工最多关联一个账号。对外不返回凭据哈希、会话 token 哈希、真实姓名或电话。','- 不提供物理删除账号/角色/资源接口；本轮以停用及授权回收控制生命周期。数据范围与临时账号未实现。','','## 请求示例','','创建角色：','','```json','{"code":"project-reviewer","name":"项目阅览角色","description":"仅授予所需文档查看操作"}','```','','修改角色（先读取服务端 version）：','','```json','{"name":"项目阅览角色","description":"调整说明","enabled":true,"version":0}','```','','替换账号角色或角色权限（ids 是本项目实际 ID，示例不应直接当作业务授权执行）：','','```json','{"version":0,"ids":[2]}','```','','版本冲突返回 409：','','```json','{"code":"VERSION_CONFLICT","message":"配置已经变化，请重新加载后再保存"}','```','','## 字段、校验与响应','','每个请求及响应模型的字段类型、长度、必填、枚举、可空、数组上限均在 OpenAPI components/schemas 中定义。POST 成功返回 200 和 id；PUT 成功返回 200 和 saved；退出返回 204。引用不存在返回 404；实体版本不匹配（含失效对象更新）返回 409。资源类型和父节点是创建后稳定字段。','','最后管理员保护在管理写事务持有 policy_lock 后执行，任何会使完整管理账号集合变空的更新返回 LAST_ADMINISTRATOR 并回滚。已有在途请求允许完成，但之后开始鉴权的请求不使用授权缓存。']
-lines += ['', '## 员工关联查找', '', '`GET /api/employees?page=1&q=...` 每页 100 条。数字、#编号或员工 #编号按精确 ID 查询；其余文字只匹配组织名称及合成姓名，不查询真实员工姓名或电话。q 最多 80 字，超长返回 400。', '', '响应包含 items、total、page、pageSize。员工查询项可带 linkedAccountId，表示已有账号关联；客户端可禁选其他账号占用的员工，但最终仍由数据库唯一约束保护。并发关联冲突返回 409 / EMPLOYEE_ALREADY_LINKED，不返回 SQL 或员工明文资料。']
+lines += ['','## 共用契约','','- 管理 API 要求 Cookie 会话、platform:access 和具体操作权限；外部批量接口使用独立 ApplicationKey。没有用户名或角色名绕过。','- 登录 JSON 返回当前身份、有效权限、CSRF 和 expiresAt；Cookie 只在登录或退出时设置，绝对有效期 1800 秒不续期。退出、停用、锁定及密码重置使相关会话失效。','- 管理写请求携带 X-CSRF-Token；本机浏览器来源仅允许 localhost/127.0.0.1 的 8080、5173、4173 端口；不开放跨域凭据访问。Apifox 非浏览器请求可不带 Origin，但仍需 Cookie 和 CSRF。','- 401 表示未认证或会话不可用，403 表示当前身份无权或 CSRF/来源校验失败，409 表示版本或数据冲突。错误体为 code、message，不包含 SQL、密码或栈。','- 账号分页 page 从 1 开始，pageSize 1–100，默认 20；后端将越界分页值夹到允许范围。员工选项每页 100 条，只显示脱敏标签。','- 代码仅用小写字母、数字、点、短横线、下划线；更新不改变稳定编码。资源严格分为应用、模块、功能点；操作权限仅能属于功能点。','- 更新实体提交 version；替换授权提交独立的 grantsVersion（请求字段名为 version）。关系 ID 不得重复；全量替换在一个事务内执行，校验失败回滚。','- 管理账号的员工关联可为空且唯一；员工业务授权不依赖该关联。对外不返回凭据哈希、会话 token 哈希、真实姓名或电话。','- 不提供物理删除账号/角色/资源接口；当前版本以停用及授权回收控制生命周期。数据范围与临时账号未实现。','','## 请求示例','','创建角色：','','```json','{"code":"project-reviewer","name":"项目阅览角色","description":"仅授予所需文档查看操作"}','```','','修改角色（先读取服务端 version）：','','```json','{"name":"项目阅览角色","description":"调整说明","enabled":true,"version":0}','```','','替换账号角色或角色权限（ids 是本项目实际 ID，示例不应直接当作业务授权执行）：','','```json','{"version":0,"ids":[2]}','```','','版本冲突返回 409：','','```json','{"code":"VERSION_CONFLICT","message":"配置已经变化，请重新加载后再保存"}','```','','## 字段、校验与响应','','每个请求及响应模型的字段类型、长度、必填、枚举、可空、数组上限均在 OpenAPI components/schemas 中定义。POST 成功返回 200 和 id；PUT 成功返回 200 和 saved；退出返回 204。引用不存在返回 404；实体版本不匹配（含失效对象更新）返回 409。资源类型和父节点是创建后稳定字段。','','最后管理员保护在管理写事务持有 policy_lock 后执行，任何会使完整管理账号集合变空的更新返回 LAST_ADMINISTRATOR 并回滚。已有在途请求允许完成，但之后开始鉴权的请求不使用授权缓存。']
+lines += ['', '## 外部业务接入', '', 'POST /api/authorization/check 使用 ApplicationKey，无 Cookie 或 CSRF。请求 employeeId + permissionCodes[]；1–50 项，严格字段和编码校验。逐项返回 permissionCode、allowed、reason，整批 requestId。混合跨应用 403；凭据无效 401；依赖异常 503；具体字段见 OpenAPI。', '', '管理角色只分配给平台账号，业务角色只分配给员工。员工角色与员工启停更新均需管理会话、CSRF、版本和管理权限。旧 /demo/documents 已移除。', '', '## 员工关联查找', '', '`GET /api/employees?page=1&q=...` 每页 100 条。数字、#编号或员工 #编号按精确 ID 查询；其余文字只匹配组织名称及合成姓名，不查询真实员工姓名或电话。q 最多 80 字，超长返回 400。', '', '响应包含 items、total、page、pageSize。员工查询项可带 linkedAccountId，表示已有账号关联；客户端可禁选其他账号占用的员工，但最终仍由数据库唯一约束保护。并发关联冲突返回 409 / EMPLOYEE_ALREADY_LINKED，不返回 SQL 或员工明文资料。']
 (DOCS/'API设计.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
 
 entities = {
  'organization':['id PK','parent_id FK (nullable)','source_key UK','name / source_row'],
- 'employee':['id PK','organization_id FK','source_key UK','full_name / synthetic'],
+ 'employee':['id PK','organization_id FK','source_key UK','full_name / synthetic','enabled / version / grants_version'],
  'account':['id PK','employee_id FK, UK (nullable)','username UK','enabled / locked','version / grants_version'],
- 'role':['id PK','code UK','name / enabled','version / grants_version'],
+ 'role':['id PK','code UK','name / enabled / purpose','version / grants_version'],
  'resource':['id PK','parent_id FK (nullable)','code UK / kind','name / enabled / version'],
  'permission':['id PK','resource_id FK','code UK','action / enabled / version'],
  'user_role':['account_id PK, FK','role_id PK, FK'],
@@ -136,8 +169,12 @@ entities = {
  'permission_template_source':['id PK','source_batch_id FK','resource_id FK','source_cell / raw_text','review_status'],
  'change_log':['id PK','actor_id FK','operation / occurred_at'],
  'policy_lock':['id PK (constant 1)'],
+ 'employee_role':['employee_id PK, FK','role_id PK, FK'],
+ 'integration_client':['id PK','code UK','application_id FK','enabled'],
+ 'integration_credential':['id PK','client_id FK','secret_hash','enabled / expires_at'],
 }
 relations=[('organization','o|','o{','organization','parent'),('organization','||','o{','employee','belongs'),('employee','o|','o|','account','optional_link'),('account','||','o|','credential','credential'),('account','||','o{','auth_session','sessions'),('account','||','o{','user_role','assignments'),('role','||','o{','user_role','assignments'),('role','||','o{','role_permission','grants'),('permission','||','o{','role_permission','grants'),('resource','o|','o{','resource','parent'),('resource','||','o{','permission','operations'),('source_batch','o|','o{','organization','source'),('source_batch','o|','o{','employee','source'),('source_batch','o|','o{','resource','source'),('source_batch','||','o{','permission_template_source','templates'),('resource','||','o{','permission_template_source','source'),('account','||','o{','change_log','actor')]
+relations += [('employee','||','o{','employee_role','business_roles'),('role','||','o{','employee_role','business_roles'),('resource','||','o{','integration_client','application_scope'),('integration_client','||','o{','integration_credential','credentials')]
 (DOCS/'数据库ER.model.json').write_text(json.dumps({'entities':entities,'relations':relations},indent=2),encoding='utf-8')
 mermaid=['erDiagram']
 for left,a,b,right,label in relations: mermaid.append(f'    {left} {a}--{b} {right} : {label}')
@@ -145,19 +182,30 @@ for name,fields in entities.items():
     mermaid.append(f'    {name} {{')
     for field in fields:
         key=field.split()[0].replace('/','_').replace('+','_')
-        if key.endswith('_id') or key=='id': mermaid.append(f'        bigint {key}')
+        if key.endswith('_id') or key=='id': mermaid.append(f'        {"varchar" if name == "integration_credential" and key == "id" else "bigint"} {key}')
     mermaid.append('    }')
 (DOCS/'数据库ER.mmd').write_text('\n'.join(mermaid)+'\n',encoding='utf-8')
 
 sql=(ROOT/'backend/src/main/resources/db/migration/V1_1__rbac_schema_mysql84.sql').read_text(encoding='utf-8')
-dictionary=['# 数据库字段字典','','此文件从当前版本化建表 SQL 提取，类型、默认值和约束原文可追踪。业务解释、基数、索引及迁移记录见《数据库设计》。']
+sql += '\n' + (ROOT/'backend/src/main/resources/db/migration/V4__employee_authorization_and_clients.sql').read_text(encoding='utf-8')
+dictionary=['# 数据库字段字典','',VERSION_NOTE,'','此文件从当前版本化建表 SQL 提取，类型、默认值和约束原文可追踪。业务解释、基数、索引及迁移记录见《数据库设计》。']
 for name,body in re.findall(r'CREATE TABLE(?: IF NOT EXISTS)? (\w+) \((.*?)\) ENGINE=InnoDB;',sql,re.S):
     dictionary += ['',f'## {name}','','| 字段 | 定义 |','| --- | --- |']
-    for line in body.splitlines():
+    # Split only top-level commas so compact V4 column declarations remain separate rows.
+    depth=0; columns=[]; beginning=0
+    for position,character in enumerate(body):
+        if character=='(': depth+=1
+        elif character==')': depth-=1
+        elif character==',' and depth==0: columns.append(body[beginning:position].strip()); beginning=position+1
+    columns.append(body[beginning:].strip())
+    for column in columns:
+        line='    '+column
         match=re.match(r'    (\w+)\s+(.+)',line)
         if match and match[1] not in ('CONSTRAINT','PRIMARY','KEY','UNIQUE'):
             dictionary.append(f'| `{match[1]}` | `{match[2].rstrip(",")}` |')
     constraints=[line.strip().rstrip(',') for line in body.splitlines() if line.strip().startswith(('CONSTRAINT','KEY','PRIMARY'))]
+    if name == 'employee': dictionary += ['| `enabled` | `BOOLEAN NOT NULL DEFAULT TRUE`；V4 |','| `version` | `BIGINT NOT NULL DEFAULT 0`；V4 |','| `grants_version` | `BIGINT NOT NULL DEFAULT 0`；V4 |']
+    if name == 'role': dictionary.append('| `purpose` | `VARCHAR(16) NOT NULL DEFAULT BUSINESS`；MANAGEMENT/BUSINESS；V4 |')
     if name == 'resource': dictionary.append('| `description` | `VARCHAR(1000) NOT NULL DEFAULT 空字符串`；由 V3 增加 |')
     dictionary += ['', '约束及索引：', ''] + [f'- `{line}`' for line in constraints]
 (DOCS/'数据库字段字典.md').write_text('\n'.join(dictionary)+'\n',encoding='utf-8')

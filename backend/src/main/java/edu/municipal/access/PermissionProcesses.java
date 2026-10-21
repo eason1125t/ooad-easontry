@@ -18,10 +18,12 @@ public class PermissionProcesses {
         )
         SELECT DISTINCT p.code FROM account a
         JOIN user_role ur ON ur.account_id = a.id
-        JOIN role r ON r.id = ur.role_id AND r.enabled = 1
+        JOIN role r ON r.id = ur.role_id AND r.enabled = 1 AND r.purpose = 'MANAGEMENT'
         JOIN role_permission rp ON rp.role_id = r.id
         JOIN permission p ON p.id = rp.permission_id AND p.enabled = 1
         JOIN available_resource ar ON ar.id = p.resource_id
+        JOIN resource f ON f.id=p.resource_id JOIN resource m ON m.id=f.parent_id
+        JOIN resource app ON app.id=m.parent_id AND app.code='management'
         WHERE a.id = #{p.id} AND a.enabled = 1 AND a.locked = 0 ORDER BY p.code
         """;
     private final Store db;
@@ -33,7 +35,7 @@ public class PermissionProcesses {
     }
     public void require(long accountId, String permission) {
         Set<String> actual = effective(accountId);
-        if (!actual.contains(permission) || (!permission.startsWith("demo.") && !actual.contains("platform:access"))) {
+        if (!actual.contains(permission) || !actual.contains("platform:access")) {
             throw new Problem(403, "FORBIDDEN", "当前账号没有执行此操作的权限");
         }
     }

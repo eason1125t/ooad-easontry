@@ -1,0 +1,13 @@
+<!doctype html>
+<!-- Independent document UI; office.js calls only its own business backend, never the RBAC secret API. -->
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>市政公文业务系统</title><link rel="stylesheet" href="/office.css"><script type="module" src="/office.js"></script></head>
+<body>
+  <header class="top"><div class="brand"><span class="seal">文</span><div><strong>市政公文业务系统</strong><small>公文阅览与维护</small></div></div><div id="identity" hidden><span id="employee-name"></span><button id="logout" class="quiet">切换身份</button></div></header>
+  <main>
+    <section id="entry" class="entry"><p class="eyebrow">本机合成身份验证</p><h1>公文业务工作台</h1><p>选择预设合成员工，验证不同角色的公文读取与修改权限。此入口不代表正式员工登录。</p><div id="profiles" class="profiles"></div><p class="footnote">普通员工无需权限平台账号。管理员在独立权限平台维护员工角色和角色权限。</p></section>
+    <section id="workspace" hidden><div class="heading"><div><h1>公文管理</h1><p>选择公文查看正文，有修改权限时可编辑并保存。</p></div><button id="refresh">刷新公文与权限</button></div><div class="permissions"><span id="read-permission">查看权限待确认</span><span id="update-permission">修改权限待确认</span><small>每次读取和保存均重新校验</small></div>
+      <div class="document-layout"><aside><div class="list-heading">公文目录 <span id="document-count">0</span></div><div id="documents" class="documents"></div></aside><section class="editor"><div id="empty" class="empty">请从左侧选择公文。</div><form id="editor-form" hidden><div class="document-meta"><span id="document-id"></span><span id="document-version"></span></div><label for="title">标题</label><input id="title" maxlength="120" required><label for="content">正文</label><textarea id="content" maxlength="10000" required rows="13"></textarea><div class="editor-footer"><p id="edit-help"></p><button id="save" class="primary" type="submit">保存修改</button></div></form></section></div>
+    </section>
+    <p id="message" class="message" role="status" hidden></p>
+  </main><footer>本机课程验证环境 · 所有公文及可选身份均为合成数据</footer>
+</body></html>

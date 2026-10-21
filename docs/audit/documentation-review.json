@@ -1,0 +1,36 @@
+{
+  "result": "passed",
+  "reviewed_at": "2026-10-21T22:54:44+08:00",
+  "source_baseline": "c0505ee5472eaf0c91ab2c172fef57a50e82f960",
+  "markdown_documents": 24,
+  "local_markdown_links": 147,
+  "python_syntax_files": 8,
+  "powershell_guide_blocks": 8,
+  "generator_outputs_compared_in_memory": [
+    "API设计.md",
+    "数据库字段字典.md",
+    "api/openapi.json"
+  ],
+  "protected_version_files_unchanged": 46,
+  "source_excel_hashes_unchanged": 3,
+  "current_api_operations": 26,
+  "current_api_schemas": 29,
+  "frontend_build": {
+    "result": "passed",
+    "commands": [
+      "vue-tsc --noEmit",
+      "vite build"
+    ]
+  },
+  "frontend_regression": {
+    "passed": 4,
+    "failed": 0
+  },
+  "git_diff_check": "passed",
+  "limitations": [
+    "No fresh-machine full installation performed",
+    "No database initialization, migration or HTTP write rehearsal executed",
+    "Running JAR not repackaged or restarted",
+    "New integration design has not been implemented"
+  ]
+}

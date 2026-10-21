@@ -25,7 +25,7 @@ public class ManagementProcesses {
         this.passwordMinimum = passwordMinimum;
         transaction.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
     }
-    private <T> T change(long actor, String operation, String required, Supplier<T> action) {
+    <T> T change(long actor, String operation, String required, Supplier<T> action) {
         return transaction.execute(status -> {
             permissions.lockPolicy();
             permissions.require(actor, required);
@@ -91,13 +91,18 @@ public class ManagementProcesses {
     }
     public List<Map<String, Object>> roles() { return db.list("SELECT * FROM role ORDER BY id"); }
     public List<Map<String, Object>> resources() { return db.list("SELECT id,parent_id,code,name,kind,enabled,version FROM resource ORDER BY id"); }
-    public List<Map<String, Object>> permissionList() { return db.list("SELECT p.*,r.name AS resource_name FROM permission p JOIN resource r ON r.id=p.resource_id ORDER BY p.id"); }
+    public List<Map<String, Object>> permissionList() { return db.list("SELECT p.*,r.name AS resource_name,a.code AS application_code FROM permission p JOIN resource r ON r.id=p.resource_id JOIN resource m ON m.id=r.parent_id JOIN resource a ON a.id=m.parent_id ORDER BY p.id"); }
     public long saveRole(long actor, Long id, Map<String, Object> body) {
         return change(actor, "role.save", "roles:write", () -> {
             String name = text(body, "name", 80);
             String description = Objects.toString(body.getOrDefault("description", ""), "");
             if (description.length() > 300) throw Problem.bad("说明最多 300 字");
-            if (id == null) return db.insert("INSERT INTO role(code,name,description) VALUES(#{p.code},#{p.name},#{p.description})", Store.parameters("code", code(body, "code", 80), "name", name, "description", description));
+            if (id == null) {
+                String purpose=Objects.toString(body.getOrDefault("purpose","BUSINESS"));
+                if(!Set.of("MANAGEMENT","BUSINESS").contains(purpose)) throw Problem.bad("请选择管理角色或业务角色");
+                return db.insert("INSERT INTO role(code,name,description,purpose) VALUES(#{p.code},#{p.name},#{p.description},#{p.purpose})", Store.parameters("code",code(body,"code",80),"name",name,"description",description,"purpose",purpose));
+            }
+            if(body.containsKey("purpose") && !body.get("purpose").equals(db.one("SELECT purpose FROM role WHERE id=#{p.id}","id",id).get("purpose"))) throw Problem.bad("角色用途创建后不可变更");
             updated(db.execute("UPDATE role SET name=#{p.name},description=#{p.description},enabled=#{p.enabled},version=version+1 WHERE id=#{p.id} AND version=#{p.version}", "id", id, "version", number(body, "version"), "name", name, "description", description, "enabled", flag(body, "enabled")));
             return id;
         });
@@ -142,18 +147,28 @@ public class ManagementProcesses {
     }
     public void replaceGrants(long actor, boolean account, long id, Map<String, Object> body) {
         change(actor, account ? "user.roles.replace" : "role.permissions.replace", "grants:write", () -> {
-            if (!(body.get("ids") instanceof List<?> ids) || ids.size() > 5000) throw Problem.bad("请选择不超过 5000 个授权对象");
-            Set<Long> unique = new LinkedHashSet<>();
-            for (Object value : ids) {
-                if (!(value instanceof Number number) || number.longValue() <= 0 || number.doubleValue() != number.longValue() || !unique.add(number.longValue())) throw Problem.bad("授权对象必须为不重复的正整数 ID");
-            }
+            Set<Long> unique=grantIds(body);
             String owner = account ? "account" : "role", relation = account ? "user_role" : "role_permission", ownerKey = account ? "account_id" : "role_id", targetKey = account ? "role_id" : "permission_id", target = account ? "role" : "permission";
             updated(db.execute("UPDATE " + owner + " SET grants_version=grants_version+1 WHERE id=#{p.id} AND grants_version=#{p.version}", "id", id, "version", number(body, "version")));
-            for (long targetId : unique) db.one("SELECT id FROM " + target + " WHERE id=#{p.id}", "id", targetId);
+            String purpose=account ? "MANAGEMENT" : (String)db.one("SELECT purpose FROM role WHERE id=#{p.id}","id",id).get("purpose");
+            for(long targetId:unique) {
+                if(account) {
+                    if(!"MANAGEMENT".equals(db.one("SELECT purpose FROM role WHERE id=#{p.id}","id",targetId).get("purpose"))) throw Problem.bad("管理账号只能分配管理角色，业务角色请分配给员工");
+                } else {
+                    String app=(String)db.one("SELECT a.code FROM permission p JOIN resource f ON f.id=p.resource_id JOIN resource m ON m.id=f.parent_id JOIN resource a ON a.id=m.parent_id WHERE p.id=#{p.id}","id",targetId).get("code");
+                    if("MANAGEMENT".equals(purpose)!= "management".equals(app)) throw Problem.bad("管理角色与业务角色的权限范围不可混用");
+                }
+            }
             db.execute("DELETE FROM " + relation + " WHERE " + ownerKey + "=#{p.id}", "id", id);
             for (long targetId : unique) db.execute("INSERT INTO " + relation + "(" + ownerKey + "," + targetKey + ") VALUES(#{p.id},#{p.target})", "id", id, "target", targetId);
             return null;
         });
+    }
+    static Set<Long> grantIds(Map<String,Object> body) {
+        if(!(body.get("ids") instanceof List<?> ids) || ids.size()>5000) throw Problem.bad("请选择不超过 5000 个授权对象");
+        Set<Long> unique=new LinkedHashSet<>();
+        for(Object value:ids) if(!(value instanceof Number n) || n.longValue()<=0 || n.doubleValue()!=n.longValue() || !unique.add(n.longValue())) throw Problem.bad("授权对象必须为不重复的正整数 ID");
+        return unique;
     }
     public Map<String, Object> employees(int page, String query) {
         String term = query.trim();
@@ -165,7 +180,7 @@ public class ManagementProcesses {
             : "(#{p.q}='' OR o.name LIKE CONCAT('%',#{p.q},'%') OR (e.synthetic=1 AND e.full_name LIKE CONCAT('%',#{p.q},'%')))";
         String source = " FROM employee e JOIN organization o ON o.id=e.organization_id LEFT JOIN account linked ON linked.employee_id=e.id WHERE " + condition;
         String employeeId = identifier ? term.replaceAll("[^0-9]", "") : "";
-        List<Map<String, Object>> rows = db.list("SELECT e.id,IF(e.synthetic,e.full_name,CONCAT('员工 #',e.id)) AS label,o.name AS organization_name,linked.id AS linked_account_id" + source + " ORDER BY e.id LIMIT 100 OFFSET #{p.offset}",
+        List<Map<String, Object>> rows = db.list("SELECT e.id,e.enabled,e.version,e.grants_version,IF(e.synthetic,e.full_name,CONCAT('员工 #',e.id)) AS label,o.name AS organization_name,linked.id AS linked_account_id" + source + " ORDER BY e.id LIMIT 100 OFFSET #{p.offset}",
             "q", term, "employeeId", employeeId, "offset", (long) (currentPage - 1) * 100);
         return Map.of("items", rows, "total", db.number("SELECT COUNT(*)" + source, "q", term, "employeeId", employeeId), "page", currentPage, "pageSize", 100);
     }

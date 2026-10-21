@@ -2,6 +2,8 @@
 
 package edu.municipal.access;
 import java.util.Map;
+import java.util.LinkedHashMap;
+import jakarta.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +14,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 @RestControllerAdvice
 public class ApiErrors {
     @ExceptionHandler(Problem.class)
-    ResponseEntity<?> problem(Problem failure) {
-        return ResponseEntity.status(failure.status).body(Map.of("code", failure.code, "message", failure.getMessage()));
+    ResponseEntity<?> problem(Problem failure,HttpServletRequest request) {
+        return error(failure.status,failure.code,failure.getMessage(),request);
     }
     @ExceptionHandler(DataIntegrityViolationException.class)
     ResponseEntity<?> integrity(DataIntegrityViolationException failure) {
@@ -25,11 +27,18 @@ public class ApiErrors {
         return ResponseEntity.status(409).body(Map.of("code", "DATA_CONFLICT", "message", "编码、员工关联或授权关系重复，或引用对象无效"));
     }
     @ExceptionHandler({HttpMessageNotReadableException.class, IllegalArgumentException.class, org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class})
-    ResponseEntity<?> input() {
-        return ResponseEntity.badRequest().body(Map.of("code", "INVALID_INPUT", "message", "请求格式或字段类型不正确"));
+    ResponseEntity<?> input(HttpServletRequest request) {
+        return error(400,request.getAttribute("authorizationRequestId")==null ? "INVALID_INPUT" : "INVALID_CHECK_REQUEST","请求格式或字段类型不正确",request);
     }
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    ResponseEntity<?> missing(HttpServletRequest request) { return error(404,"NOT_FOUND","接口或资源不存在",request); }
     @ExceptionHandler(Exception.class)
-    ResponseEntity<?> unexpected() {
-        return ResponseEntity.status(500).body(Map.of("code", "INTERNAL_ERROR", "message", "服务内部处理失败，请稍后重试"));
+    ResponseEntity<?> unexpected(HttpServletRequest request) {
+        return error(500,"INTERNAL_ERROR","服务内部处理失败，请稍后重试",request);
+    }
+    private ResponseEntity<?> error(int status,String code,String message,HttpServletRequest request) {
+        Map<String,Object> body=new LinkedHashMap<>(Map.of("code",code,"message",message));
+        if(request.getAttribute("authorizationRequestId")!=null) body.put("requestId",request.getAttribute("authorizationRequestId"));
+        return ResponseEntity.status(status).body(body);
     }
 }

@@ -45,6 +45,9 @@ public class SessionProcesses {
             attempts.compute(key, (ignored, existing) -> new Attempt(existing == null ? 1 : existing.failures() + 1, existing == null ? now.plusSeconds(300) : existing.until()));
             throw new Problem(401, "INVALID_CREDENTIALS", "账号或密码不正确，或账号不可用");
         }
+        if (!permissions.effective(((Number) row.get("id")).longValue()).contains("platform:access")) {
+            throw new Problem(403, "MANAGEMENT_LOGIN_REQUIRED", "该账号没有权限管理平台访问权限");
+        }
         attempts.remove(key);
         String token = randomToken(), csrf = randomToken();
         Instant expiry = now.plusSeconds(seconds);
@@ -60,7 +63,8 @@ public class SessionProcesses {
         Map<String, Object> row = rows.getFirst();
         Instant expiry = (Instant) row.get("expiresAt");
         // Equality is expired. No request updates expires_at or replaces the browser cookie.
-        if (!clock.instant().isBefore(expiry) || !Boolean.TRUE.equals(row.get("enabled")) || Boolean.TRUE.equals(row.get("locked"))) {
+        if (!clock.instant().isBefore(expiry) || !Boolean.TRUE.equals(row.get("enabled")) || Boolean.TRUE.equals(row.get("locked"))
+                || !permissions.effective(((Number) row.get("accountId")).longValue()).contains("platform:access")) {
             db.execute("DELETE FROM auth_session WHERE token_hash=#{p.hash}", "hash", tokenHash);
             throw unauthenticated();
         }
@@ -72,7 +76,7 @@ public class SessionProcesses {
         result.put("roles", db.list("SELECT r.id,r.code,r.name,r.enabled FROM role r JOIN user_role ur ON ur.role_id=r.id WHERE ur.account_id=#{p.id}", "id", identity.accountId()));
         result.put("csrfToken", identity.csrfToken()); result.put("expiresAt", identity.expiresAt());
         Object employee = result.get("employeeId");
-        if (employee != null) result.put("employee", db.one("SELECT e.id,IF(e.synthetic,e.full_name,CONCAT('员工 #',e.id)) AS label,o.name AS organization_name,e.position_name FROM employee e JOIN organization o ON o.id=e.organization_id WHERE e.id=#{p.id}", "id", employee));
+        if (employee != null) result.put("employee", db.one("SELECT e.id,e.enabled,e.version,e.grants_version,IF(e.synthetic,e.full_name,CONCAT('员工 #',e.id)) AS label,o.name AS organization_name,e.position_name FROM employee e JOIN organization o ON o.id=e.organization_id WHERE e.id=#{p.id}", "id", employee));
         return result;
     }
     public void logout(Identity identity) { db.execute("DELETE FROM auth_session WHERE token_hash=#{p.hash}", "hash", identity.tokenHash()); }

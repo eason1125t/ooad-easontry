@@ -1,4 +1,4 @@
-// HTTP identity/CSRF boundary. Every API except health/login requires a database-backed session.
+// Separate administrator Cookie/CSRF and application-key boundaries; never substitute one identity for the other.
 
 package edu.municipal.access;
 import jakarta.servlet.http.*;
@@ -21,6 +21,14 @@ public class SecurityGate implements WebMvcConfigurer {
                 response.setHeader("Cache-Control", "no-store");
                 response.setHeader("X-Content-Type-Options", "nosniff");
                 response.setHeader("X-Frame-Options", "DENY");
+                if(request.getRequestURI().equals("/api/authorization/check")) {
+                    request.setAttribute("authorizationRequestId",UUID.randomUUID().toString().replace("-",""));
+                    if(!request.getMethod().equals("POST")) throw new Problem(405,"METHOD_NOT_ALLOWED","请使用 POST 批量鉴权");
+                    if(request.getHeader("Origin")!=null) throw new Problem(403,"APPLICATION_SCOPE_DENIED","此接口仅供业务后端调用");
+                    String key=request.getHeader("X-App-Key");
+                    if(key==null || !key.matches("[a-f0-9]{32}\\.[A-Za-z0-9_-]{43}")) throw new Problem(401,"INVALID_APP_CREDENTIAL","应用凭据无效或不可用");
+                    return true; // Database-backed application authentication occurs inside the batch snapshot.
+                }
                 if (request.getRequestURI().equals("/api/health") && request.getMethod().equals("GET")) return true;
                 String origin = request.getHeader("Origin");
                 if (origin != null && !origin.matches("http://(localhost|127\\.0\\.0\\.1):(8080|5173|4173)")) throw new Problem(403, "ORIGIN_REJECTED", "请求来源不受信任");

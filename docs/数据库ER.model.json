@@ -10,7 +10,8 @@
       "id PK",
       "organization_id FK",
       "source_key UK",
-      "full_name / synthetic"
+      "full_name / synthetic",
+      "enabled / version / grants_version"
     ],
     "account": [
       "id PK",
@@ -22,7 +23,7 @@
     "role": [
       "id PK",
       "code UK",
-      "name / enabled",
+      "name / enabled / purpose",
       "version / grants_version"
     ],
     "resource": [
@@ -75,6 +76,22 @@
     ],
     "policy_lock": [
       "id PK (constant 1)"
+    ],
+    "employee_role": [
+      "employee_id PK, FK",
+      "role_id PK, FK"
+    ],
+    "integration_client": [
+      "id PK",
+      "code UK",
+      "application_id FK",
+      "enabled"
+    ],
+    "integration_credential": [
+      "id PK",
+      "client_id FK",
+      "secret_hash",
+      "enabled / expires_at"
     ]
   },
   "relations": [
@@ -196,6 +213,34 @@
       "o{",
       "change_log",
       "actor"
+    ],
+    [
+      "employee",
+      "||",
+      "o{",
+      "employee_role",
+      "business_roles"
+    ],
+    [
+      "role",
+      "||",
+      "o{",
+      "employee_role",
+      "business_roles"
+    ],
+    [
+      "resource",
+      "||",
+      "o{",
+      "integration_client",
+      "application_scope"
+    ],
+    [
+      "integration_client",
+      "||",
+      "o{",
+      "integration_credential",
+      "credentials"
     ]
   ]
 }

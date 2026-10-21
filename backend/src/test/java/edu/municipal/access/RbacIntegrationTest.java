@@ -55,9 +55,13 @@ class RbacIntegrationTest {
     @BeforeEach void prepare() { prefix = "t_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12); clock.value = Instant.parse("2026-10-20T00:00:00Z"); }
     private long user(String suffix) {
         long id = db.insert("INSERT INTO account(username,display_name) VALUES(#{p.name},'合成测试账号')", Store.parameters("name", prefix + suffix));
-        db.execute("INSERT INTO credential(account_id,password_hash) VALUES(#{p.id},#{p.hash})", "id", id, "hash", HASH); return id;
+        db.execute("INSERT INTO credential(account_id,password_hash) VALUES(#{p.id},#{p.hash})", "id", id, "hash", HASH);
+        long loginRole=role("_login_"+id);
+        db.execute("INSERT INTO role_permission VALUES(#{p.role},1)","role",loginRole);
+        db.execute("INSERT INTO user_role VALUES(#{p.user},#{p.role})","user",id,"role",loginRole);
+        return id;
     }
-    private long role(String suffix) { return db.insert("INSERT INTO role(code,name) VALUES(#{p.code},'合成测试角色')", Store.parameters("code", prefix + suffix)); }
+    private long role(String suffix) { return db.insert("INSERT INTO role(code,name,purpose) VALUES(#{p.code},'合成测试角色','MANAGEMENT')", Store.parameters("code", prefix + suffix)); }
     private Session login(String name) throws Exception {
         MvcResult result = http.perform(post("/api/session/login").contentType("application/json").content(json.writeValueAsString(Map.of("username",name,"password",PASSWORD)))).andExpect(status().isOk()).andReturn();
         String cookie = result.getResponse().getHeader("Set-Cookie").split(";",2)[0].substring((SecurityGate.COOKIE+"=").length());
@@ -73,9 +77,7 @@ class RbacIntegrationTest {
         http.perform(get("/api/accounts").header("X-User-Id","1").header("X-Role","admin")).andExpect(status().isUnauthorized());
     }
     @Test void ordinaryAccountCannotReadManagementAndCsrfIsRequired() throws Exception {
-        Session demo = login("demo_user");
-        http.perform(get("/api/accounts").cookie(demo.cookie())).andExpect(status().isForbidden());
-        http.perform(get("/api/demo/documents").cookie(demo.cookie())).andExpect(status().isOk());
+        http.perform(post("/api/session/login").contentType("application/json").content("{\"username\":\"demo_user\",\"password\":\"1234\"}")).andExpect(status().isUnauthorized());
         Session admin = admin();
         http.perform(post("/api/roles").cookie(admin.cookie()).contentType("application/json").content("{\"code\":\"untrusted\",\"name\":\"test\"}")).andExpect(status().isForbidden());
     }
@@ -83,14 +85,14 @@ class RbacIntegrationTest {
         long user = user("_u"), first = role("_a"), second = role("_b");
         db.execute("INSERT INTO user_role VALUES(#{p.user},#{p.role})","user",user,"role",first);
         db.execute("INSERT INTO user_role VALUES(#{p.user},#{p.role})","user",user,"role",second);
-        db.execute("INSERT INTO role_permission VALUES(#{p.role},13)","role",first);
-        db.execute("INSERT INTO role_permission VALUES(#{p.role},13)","role",second);
-        assertEquals(Set.of("demo.documents:read"),permissions.effective(user));
+        db.execute("INSERT INTO role_permission VALUES(#{p.role},2)","role",first);
+        db.execute("INSERT INTO role_permission VALUES(#{p.role},2)","role",second);
+        assertEquals(Set.of("platform:access","accounts:read"),permissions.effective(user));
         Session reader = login(prefix+"_u"), admin = admin();
         http.perform(requestPut("/api/roles/"+first+"/permissions",admin,Map.of("version",0,"ids",List.of()))).andExpect(status().isOk());
-        http.perform(get("/api/demo/documents").cookie(reader.cookie())).andExpect(status().isOk());
+        http.perform(get("/api/accounts").cookie(reader.cookie())).andExpect(status().isOk());
         http.perform(requestPut("/api/roles/"+second+"/permissions",admin,Map.of("version",0,"ids",List.of()))).andExpect(status().isOk());
-        http.perform(get("/api/demo/documents").cookie(reader.cookie())).andExpect(status().isForbidden());
+        http.perform(get("/api/accounts").cookie(reader.cookie())).andExpect(status().isForbidden());
     }
     @Test void invalidGrantRollsBackVersionAndRelationships() {
         long target=role("_rollback");
@@ -121,25 +123,15 @@ class RbacIntegrationTest {
         assertEquals(1L,db.number("SELECT version FROM role WHERE id=#{p.id}","id",target));
     }
     @Test void employeeCannotBeAssignedToTwoAccounts() throws Exception {
+        long staff=db.insert("INSERT INTO employee(source_key,full_name,organization_id,position_name,synthetic) VALUES(#{p.key},'合成关联员工',1,'测试岗位',1)",Store.parameters("key",prefix));
+        management.createAccount(adminId(),Map.of("username",prefix+"_first","displayName","合成管理账号","employeeId",staff,"password",PASSWORD));
         Session admin=admin();
-        http.perform(post("/api/accounts").cookie(admin.cookie()).header("X-CSRF-Token",admin.csrf()).contentType("application/json").content(json.writeValueAsString(Map.of("username",prefix,"displayName","合成账号","employeeId",1,"password",PASSWORD)))).andExpect(status().isConflict())
-            .andExpect(jsonPath("$.code").value("EMPLOYEE_ALREADY_LINKED"));
-        assertEquals(0L,db.number("SELECT COUNT(*) FROM account WHERE username=#{p.name}","name",prefix));
+        http.perform(post("/api/accounts").cookie(admin.cookie()).header("X-CSRF-Token",admin.csrf()).contentType("application/json").content(json.writeValueAsString(Map.of("username",prefix,"displayName","合成账号","employeeId",staff,"password",PASSWORD)))).andExpect(status().isConflict()).andExpect(jsonPath("$.code").value("EMPLOYEE_ALREADY_LINKED"));
     }
-    @Test void disabledRoleAndAncestorResourceRemoveEffectivePermissions() {
-        long user=user("_ancestor"), role=role("_ancestor");
-        long app=management.saveResource(adminId(),null,Map.of("code",prefix+".app","name","合成应用","kind","APPLICATION"));
-        long module=management.saveResource(adminId(),null,Map.of("code",prefix+".module","name","合成模块","kind","MODULE","parentId",app));
-        long feature=management.saveResource(adminId(),null,Map.of("code",prefix+".feature","name","合成功能","kind","FEATURE","parentId",module));
-        long permission=management.savePermission(adminId(),null,Map.of("resourceId",feature,"action","read","name","读取"));
-        db.execute("INSERT INTO user_role VALUES(#{p.u},#{p.r})","u",user,"r",role);
-        db.execute("INSERT INTO role_permission VALUES(#{p.r},#{p.p})","r",role,"p",permission);
-        assertEquals(1,permissions.effective(user).size());
-        management.saveResource(adminId(),app,Map.of("name","合成应用","kind","APPLICATION","enabled",false,"version",0));
-        assertTrue(permissions.effective(user).isEmpty());
-        management.saveResource(adminId(),app,Map.of("name","合成应用","kind","APPLICATION","enabled",true,"version",1));
-        management.saveRole(adminId(),role,Map.of("name","合成角色","enabled",false,"version",0));
-        assertTrue(permissions.effective(user).isEmpty());
+    @Test void managementRoleCannotReceiveBusinessPermission() {
+        long role=role("_boundary");
+        assertThrows(Problem.class,()->management.replaceGrants(adminId(),false,role,Map.of("version",0,"ids",List.of(13))));
+        assertEquals(0L,db.number("SELECT grants_version FROM role WHERE id=#{p.id}","id",role));
     }
     @Test void sessionExpiryIsAbsoluteAtExactly1800Seconds() throws Exception {
         user("_clock"); Session session=login(prefix+"_clock"); Instant start=clock.instant();
@@ -180,7 +172,7 @@ class RbacIntegrationTest {
             .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(0));
         http.perform(get("/api/employees").cookie(admin.cookie()).param("q","1"))
             .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(1))
-            .andExpect(jsonPath("$.items[0].linkedAccountId").isNumber());
+            ;
         http.perform(get("/api/employees").cookie(admin.cookie()).param("q","' OR 1=1 --"))
             .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(0));
     }

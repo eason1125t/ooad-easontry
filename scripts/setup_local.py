@@ -20,12 +20,12 @@ import pymysql
 
 def configure() -> None:
     """Preflight names first, then create schema-scoped accounts without resetting data."""
-    root_password, admin_name, admin_password, demo_password = [entry.get() for entry in entries]
+    root_password, admin_name, admin_password = [entry.get() for entry in entries]
     if not re.fullmatch(r'[a-z][a-z0-9._-]{2,63}', admin_name):
         raise ValueError('管理员用户名须为 3–64 位小写字母、数字、点、下划线或短横线。')
-    if any(not 4 <= len(value) <= 64 for value in (admin_password, demo_password)):
-        raise ValueError('本机演示账号密码须为 4–64 位。')
-    if any(len(value.encode('utf-8')) > 72 for value in (admin_password, demo_password)):
+    if any(not 4 <= len(value) <= 64 for value in (admin_password,)):
+        raise ValueError('本机管理员密码须为 4–64 位。')
+    if any(len(value.encode('utf-8')) > 72 for value in (admin_password,)):
         raise ValueError('BCrypt 密码 UTF-8 长度最多 72 字节。')
     local = ROOT / '.local'
     if (local / 'application-local.properties').exists():
@@ -39,7 +39,7 @@ def configure() -> None:
                 raise ValueError('预定数据库账号已存在，已停止；不会重置现有账号密码。')
             cursor.execute("SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='municipal_access_ooad_dev'")
             if cursor.fetchone()[0] != 1:
-                raise ValueError('预期的独立开发库不存在，请先检查 Navicat 连接。')
+                raise ValueError('独立开发库不存在，请按安装指南先创建 municipal_access_ooad_dev。')
             cursor.execute("SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='municipal_access_ooad_test'")
             if cursor.fetchone()[0]:
                 raise ValueError('预定测试库已存在，已停止；不会覆盖或清空。')
@@ -58,8 +58,7 @@ def configure() -> None:
         'spring.flyway.user=municipal_ooad_migrator\n'
         f'spring.flyway.password={migration_password}\n', encoding='utf-8')
     bootstrap = {'username': admin_name,
-                 'passwordHash': bcrypt.hashpw(admin_password.encode(), bcrypt.gensalt(rounds=12)).decode(),
-                 'demoPasswordHash': bcrypt.hashpw(demo_password.encode(), bcrypt.gensalt(rounds=12)).decode()}
+                 'passwordHash': bcrypt.hashpw(admin_password.encode(), bcrypt.gensalt(rounds=12)).decode()}
     (local / 'bootstrap.json').write_text(json.dumps(bootstrap), encoding='utf-8')
     (local / 'setup-status.json').write_text(json.dumps({'configured': True, 'database': 'municipal_access_ooad_dev', 'testDatabase': 'municipal_access_ooad_test'}), encoding='utf-8')
     for entry in entries:
@@ -83,10 +82,10 @@ window.title('市政权限平台 · 本机初始化')
 window.geometry('640x390')
 frame = ttk.Frame(window, padding=24)
 frame.pack(fill='both', expand=True)
-ttk.Label(frame, text='凭据仅用于本机初始化，不会发送到聊天。', font=('Microsoft YaHei UI', 12)).pack(anchor='w', pady=(0, 8))
+ttk.Label(frame, text='本机环境初始化与凭据配置', font=('Microsoft YaHei UI', 12)).pack(anchor='w', pady=(0, 8))
 ttk.Label(frame, text='将建立独立测试库、数据库应用/迁移账号和网页管理员。').pack(anchor='w', pady=(0, 14))
 entries = []
-for label, hidden, default in [('MySQL root 密码', True, ''), ('网页管理员用户名', False, 'project_admin'), ('网页管理员密码（4–64 位）', True, ''), ('演示账号 demo_user 密码（4–64 位）', True, '')]:
+for label, hidden, default in [('MySQL root 密码', True, ''), ('网页管理员用户名', False, 'project_admin'), ('网页管理员密码（4–64 位）', True, '')]:
     row = ttk.Frame(frame)
     row.pack(fill='x', pady=6)
     ttk.Label(row, text=label, width=31).pack(side='left')

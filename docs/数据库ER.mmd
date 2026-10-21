@@ -16,6 +16,10 @@ erDiagram
     source_batch ||--o{ permission_template_source : templates
     resource ||--o{ permission_template_source : source
     account ||--o{ change_log : actor
+    employee ||--o{ employee_role : business_roles
+    role ||--o{ employee_role : business_roles
+    resource ||--o{ integration_client : application_scope
+    integration_client ||--o{ integration_credential : credentials
     organization {
         bigint id
         bigint parent_id
@@ -67,4 +71,16 @@ erDiagram
     }
     policy_lock {
         bigint id
+    }
+    employee_role {
+        bigint employee_id
+        bigint role_id
+    }
+    integration_client {
+        bigint id
+        bigint application_id
+    }
+    integration_credential {
+        varchar id
+        bigint client_id
     }

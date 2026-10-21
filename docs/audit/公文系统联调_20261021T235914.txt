@@ -1,0 +1,39 @@
+公文业务系统跨系统授权验收
+2026-10-21T23:59:14+08:00
+范围：本机合成数据；真实 HTTP；独立管理与员工会话。
+01. GET :8080/api/health 预期 200，实际 200
+02. GET :9090/office-api/health 预期 200，实际 200
+03. GET :8080/api/accounts 预期 401，实际 401
+04. POST :8080/api/session/login 预期 200，实际 200
+05. POST :8080/api/authorization/check 预期 401，实际 401
+06. GET :8080/api/roles 预期 200，实际 200
+07. GET :8080/api/employees/10002/roles 预期 200，实际 200
+08. POST :9090/office-api/mock-session 预期 200，实际 200
+09. GET :9090/office-api/documents 预期 200，实际 200
+10. GET :9090/office-api/permissions 预期 200，实际 200
+11. PUT :9090/office-api/documents/DOC-001 预期 200，实际 200
+12. PUT :8080/api/employees/10002/roles 预期 200，实际 200
+13. PUT :9090/office-api/documents/DOC-001 预期 403，实际 403
+14. GET :9090/office-api/documents 预期 200，实际 200
+断言：撤权后原员工会话修改被拒；公文标题和版本保持不变。
+15. GET :8080/api/employees/10002/roles 预期 200，实际 200
+16. PUT :8080/api/employees/10002/roles 预期 200，实际 200
+17. PUT :9090/office-api/documents/DOC-001 预期 200，实际 200
+断言：恢复授权后，未重新登录的同一员工会话保存成功；原合成标题和正文已恢复，版本正常递增。
+18. POST :9090/office-api/mock-session 预期 200，实际 200
+19. GET :9090/office-api/documents 预期 200，实际 200
+20. PUT :9090/office-api/documents/DOC-001 预期 403，实际 403
+21. POST :8080/api/authorization/check 预期 200，实际 200
+22. POST :8080/api/authorization/check 预期 403，实际 403
+23. POST :8080/api/authorization/check 预期 400，实际 400
+24. POST :8080/api/authorization/check 预期 400，实际 400
+25. POST :8080/api/authorization/check 预期 400，实际 400
+26. GET :8080/api/accounts 预期 401，实际 401
+27. GET :8080/api/demo/documents 预期 404，实际 404
+28. POST :8080/api/session/login 预期 401，实际 401
+29. POST :9090/office-api/logout 预期 200，实际 200
+30. GET :9090/office-api/me 预期 401，实际 401
+31. POST :8080/api/session/logout 预期 204，实际 204
+全部断言通过。
+未修改来源员工、数据库凭据或历史测试记录；未记录 Cookie、CSRF 或应用密钥。
+服务异常与损坏响应场景另由独立公文系统集成测试验证。

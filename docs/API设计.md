@@ -1,5 +1,7 @@
 # HTTP API 设计与实现映射
 
+> 适用版本：员工业务授权与独立公文系统接入版本（Flyway V4）。执行结果见[跨系统验收记录](公文系统接入验收记录.md)，历史版本另行保留。
+
 本地权威契约：`docs/api/openapi.json`（OpenAPI 3.0.3）。HTTP JSON 接口与 Java 内部过程分别描述。实现及验证状态以《测试与验收》为准；Apifox 回读状态另记录，不能以导入后的平台默认状态代替测试。
 
 ## 接口清单
@@ -31,19 +33,23 @@
 | GET | `/accounts/{id}/permissions` | 计算指定账号的有效权限 | `grants:read` | FR-06 |
 | GET | `/employees` | 分页读取脱敏员工关联选项 | `employees:read` | FR-08 |
 | GET | `/organizations` | 读取组织树节点 | `employees:read` | FR-08 |
-| GET | `/demo/documents` | 读取受保护的合成文档 | `demo.documents:read` | FR-13 |
+| GET | `/employees/{id}/roles` | 读取员工业务角色及版本 | `grants:read` | D-24 |
+| PUT | `/employees/{id}/roles` | 替换员工业务角色 | `grants:write` | D-24 |
+| GET | `/employees/{id}/permissions` | 读取员工有效业务权限 | `grants:read` | D-24 |
+| PUT | `/employees/{id}` | 更新员工有效状态 | `grants:write` | D-24 |
+| POST | `/authorization/check` | 应用身份批量鉴权 | `application` | D-25 |
 
 ## 共用契约
 
-- 所有业务接口均受服务端保护；管理 API 同时要求 platform:access 和具体操作权限。没有用户名或中文角色名绕过。
+- 管理 API 要求 Cookie 会话、platform:access 和具体操作权限；外部批量接口使用独立 ApplicationKey。没有用户名或角色名绕过。
 - 登录 JSON 返回当前身份、有效权限、CSRF 和 expiresAt；Cookie 只在登录或退出时设置，绝对有效期 1800 秒不续期。退出、停用、锁定及密码重置使相关会话失效。
-- 写请求携带 X-CSRF-Token；本机浏览器来源仅允许 localhost/127.0.0.1 的 8080、5173、4173 端口；不开放跨域凭据访问。Apifox 非浏览器请求可不带 Origin，但仍需 Cookie 和 CSRF。
+- 管理写请求携带 X-CSRF-Token；本机浏览器来源仅允许 localhost/127.0.0.1 的 8080、5173、4173 端口；不开放跨域凭据访问。Apifox 非浏览器请求可不带 Origin，但仍需 Cookie 和 CSRF。
 - 401 表示未认证或会话不可用，403 表示当前身份无权或 CSRF/来源校验失败，409 表示版本或数据冲突。错误体为 code、message，不包含 SQL、密码或栈。
 - 账号分页 page 从 1 开始，pageSize 1–100，默认 20；后端将越界分页值夹到允许范围。员工选项每页 100 条，只显示脱敏标签。
 - 代码仅用小写字母、数字、点、短横线、下划线；更新不改变稳定编码。资源严格分为应用、模块、功能点；操作权限仅能属于功能点。
 - 更新实体提交 version；替换授权提交独立的 grantsVersion（请求字段名为 version）。关系 ID 不得重复；全量替换在一个事务内执行，校验失败回滚。
-- 员工 ID 可为空；一个员工最多关联一个账号。对外不返回凭据哈希、会话 token 哈希、真实姓名或电话。
-- 不提供物理删除账号/角色/资源接口；本轮以停用及授权回收控制生命周期。数据范围与临时账号未实现。
+- 管理账号的员工关联可为空且唯一；员工业务授权不依赖该关联。对外不返回凭据哈希、会话 token 哈希、真实姓名或电话。
+- 不提供物理删除账号/角色/资源接口；当前版本以停用及授权回收控制生命周期。数据范围与临时账号未实现。
 
 ## 请求示例
 
@@ -76,6 +82,12 @@
 每个请求及响应模型的字段类型、长度、必填、枚举、可空、数组上限均在 OpenAPI components/schemas 中定义。POST 成功返回 200 和 id；PUT 成功返回 200 和 saved；退出返回 204。引用不存在返回 404；实体版本不匹配（含失效对象更新）返回 409。资源类型和父节点是创建后稳定字段。
 
 最后管理员保护在管理写事务持有 policy_lock 后执行，任何会使完整管理账号集合变空的更新返回 LAST_ADMINISTRATOR 并回滚。已有在途请求允许完成，但之后开始鉴权的请求不使用授权缓存。
+
+## 外部业务接入
+
+POST /api/authorization/check 使用 ApplicationKey，无 Cookie 或 CSRF。请求 employeeId + permissionCodes[]；1–50 项，严格字段和编码校验。逐项返回 permissionCode、allowed、reason，整批 requestId。混合跨应用 403；凭据无效 401；依赖异常 503；具体字段见 OpenAPI。
+
+管理角色只分配给平台账号，业务角色只分配给员工。员工角色与员工启停更新均需管理会话、CSRF、版本和管理权限。旧 /demo/documents 已移除。
 
 ## 员工关联查找
 

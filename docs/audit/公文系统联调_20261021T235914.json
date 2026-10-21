@@ -1,0 +1,226 @@
+{
+  "result": "passed",
+  "executed_at": "2026-10-21T23:59:14+08:00",
+  "checks": [
+    {
+      "port": 8080,
+      "method": "GET",
+      "path": "/api/health",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "GET",
+      "path": "/office-api/health",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 8080,
+      "method": "GET",
+      "path": "/api/accounts",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "port": 8080,
+      "method": "POST",
+      "path": "/api/session/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 8080,
+      "method": "POST",
+      "path": "/api/authorization/check",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "port": 8080,
+      "method": "GET",
+      "path": "/api/roles",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 8080,
+      "method": "GET",
+      "path": "/api/employees/10002/roles",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "POST",
+      "path": "/office-api/mock-session",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "GET",
+      "path": "/office-api/documents",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "GET",
+      "path": "/office-api/permissions",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "PUT",
+      "path": "/office-api/documents/DOC-001",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 8080,
+      "method": "PUT",
+      "path": "/api/employees/10002/roles",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "PUT",
+      "path": "/office-api/documents/DOC-001",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "port": 9090,
+      "method": "GET",
+      "path": "/office-api/documents",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 8080,
+      "method": "GET",
+      "path": "/api/employees/10002/roles",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 8080,
+      "method": "PUT",
+      "path": "/api/employees/10002/roles",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "PUT",
+      "path": "/office-api/documents/DOC-001",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "POST",
+      "path": "/office-api/mock-session",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "GET",
+      "path": "/office-api/documents",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "PUT",
+      "path": "/office-api/documents/DOC-001",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "port": 8080,
+      "method": "POST",
+      "path": "/api/authorization/check",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 8080,
+      "method": "POST",
+      "path": "/api/authorization/check",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "port": 8080,
+      "method": "POST",
+      "path": "/api/authorization/check",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "port": 8080,
+      "method": "POST",
+      "path": "/api/authorization/check",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "port": 8080,
+      "method": "POST",
+      "path": "/api/authorization/check",
+      "expected": 400,
+      "actual": 400
+    },
+    {
+      "port": 8080,
+      "method": "GET",
+      "path": "/api/accounts",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "port": 8080,
+      "method": "GET",
+      "path": "/api/demo/documents",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "port": 8080,
+      "method": "POST",
+      "path": "/api/session/login",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "port": 9090,
+      "method": "POST",
+      "path": "/office-api/logout",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "port": 9090,
+      "method": "GET",
+      "path": "/office-api/me",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "port": 8080,
+      "method": "POST",
+      "path": "/api/session/logout",
+      "expected": 204,
+      "actual": 204
+    }
+  ],
+  "same_employee_session_revoke_restore": true,
+  "denied_write_preserves_version_and_title": true,
+  "report": "公文系统联调_20261021T235914.txt"
+}

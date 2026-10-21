@@ -1,0 +1,19 @@
+{
+  "reviewed_on": "2026-10-22",
+  "scope": "employee authorization and independent document business system",
+  "mysql_integration_tests": 25,
+  "document_integration_tests": 6,
+  "frontend_regressions": 4,
+  "management_http_schema_checks": 17,
+  "cross_service_response_checks": 16,
+  "walkthrough_http_requests": 31,
+  "authoritative_openapi_operations": {
+    "rbac": 30,
+    "documents": 8
+  },
+  "source_files_preserved": true,
+  "fresh_environment_installation_tested": false,
+  "real_employee_authentication_implemented": false,
+  "performance_acceptance_completed": false,
+  "private_configuration_in_delivery": false
+}
