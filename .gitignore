@@ -10,3 +10,9 @@ deliverables/
 .env
 .env.*
 !.env.example
+# Source attachments and duplicate desktop exports remain local.
+/市政公司员工信息表.xlsx
+/市政公司部门信息表.xlsx
+/市政公司应用软件功能权限清单(1).xlsx
+/新聊天启动说明_市政统一权限管理.md
+/默认模块.openapi.json
