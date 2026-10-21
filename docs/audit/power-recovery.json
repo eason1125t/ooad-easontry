@@ -1,0 +1,57 @@
+{
+  "checked_on": "2026-10-21T19:40:37+08:00",
+  "mysql": {
+    "result": "passed",
+    "tables_checked": 15,
+    "counts": {
+      "account": 3,
+      "auth_session": 7,
+      "change_log": 50,
+      "credential": 3,
+      "employee": 10001,
+      "flyway_schema_history": 3,
+      "organization": 113,
+      "permission": 13,
+      "permission_template_source": 1795,
+      "policy_lock": 1,
+      "resource": 504,
+      "role": 5,
+      "role_permission": 15,
+      "source_batch": 3,
+      "user_role": 3
+    },
+    "previous_backup_comparison": {
+      "previous": "20261021T181713",
+      "changed_data_tables": [],
+      "create_statements_equal": true
+    }
+  },
+  "apifox": {
+    "result": "passed",
+    "operations": 26,
+    "schemas": 29,
+    "differences": [],
+    "native_environments": 3,
+    "native_bytes": 256726,
+    "native_sha256": "25a1afbcfc377650302d7553397e7242884d3c9e097656840a3b03e861bb2a46",
+    "native_api_count": 26,
+    "online_observed": true
+  },
+  "navicat": {
+    "unsaved_queries_observed": 2,
+    "visible_query": "existing development-database creation SQL",
+    "save_status": "awaiting user confirmation",
+    "automation_issue": "failed to activate captured window after one recovery retry",
+    "sql_not_executed": true
+  },
+  "platform": {
+    "http_schema_checks": 18,
+    "frontend_assets": 2,
+    "result": "passed"
+  },
+  "local_backup_directory": ".local/backups/关机恢复_20261021T193008",
+  "limitations": [
+    "Cannot recover or prove pre-shutdown uncommitted transactions/unsaved editor changes from committed data",
+    "No restore/reimport rehearsal performed"
+  ]
+}

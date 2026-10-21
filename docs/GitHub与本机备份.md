@@ -2,6 +2,8 @@
 
 日期：2026-10-21。仓库：[eason1125t/ooad-easontry](https://github.com/eason1125t/ooad-easontry)，本轮核验为 Private。开发主分支 main；首次本地进度提交为 cdef8fa。
 
+关机后另存的数据库、Apifox 原生及 OpenAPI 快照见[关机恢复检查记录](关机恢复检查记录.md)，不覆盖下述首次备份。
+
 ## GitHub 保存的内容
 
 源码、开发文档、ER、数据库迁移和合成种子、完整 OpenAPI、Apifox 导出、聚合测试结果及合成页面截图。原有 98 个版本文件已检查，不包含本机数据库密码、初始化密码哈希、GitHub Token、私钥或原始 Excel。
