@@ -1,0 +1,37 @@
+{
+  "checked_on": "2026-10-21T11:43:58+08:00",
+  "project_id": "8950931",
+  "branch": "main",
+  "module_id": "8746079",
+  "source_sha256": "633a74ecc8db94d0fa81e6440bca3dc9b4f8921d0dcd4058f6553bd422ab5ea0",
+  "export_sha256": "7e0d5a896fc010098940e587bb8bc1dbe05ec11fc251ed1f82a31eedbd807226",
+  "operations": 26,
+  "schemas": 29,
+  "compared_operation_fields": [
+    "operationId",
+    "summary",
+    "description",
+    "parameters",
+    "requestBody",
+    "responses",
+    "security",
+    "x-requirement-id",
+    "x-required-permission",
+    "x-implementation-status"
+  ],
+  "ignored_export_normalization": [
+    "info/module title and version",
+    "OpenAPI 3.0 patch version",
+    "optional false flags",
+    "empty containers",
+    "empty description/example",
+    "array ordering"
+  ],
+  "differences": [
+    {
+      "operation": "GET /api/employees",
+      "field": "responses"
+    }
+  ],
+  "result": "failed"
+}

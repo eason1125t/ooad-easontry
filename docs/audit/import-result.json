@@ -1,0 +1,14 @@
+{
+  "organizations": 111,
+  "employees": 10000,
+  "applications": 18,
+  "module_groups": 115,
+  "features": 359,
+  "pending_template_cells": 1795,
+  "true_blank_template_cells": [
+    "I340"
+  ],
+  "accounts_created": 0,
+  "automatic_grants_created": 0,
+  "applied": true
+}

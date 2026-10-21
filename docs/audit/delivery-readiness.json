@@ -1,0 +1,12 @@
+{
+  "checked_on": "2026-10-21T16:40:11+08:00",
+  "result": "passed",
+  "checks": [
+    "flow_user enabled/unlocked/unlinked",
+    "flow_user only role A",
+    "role A only demo document permission",
+    "role B no permissions",
+    "Apifox comparison hashes current",
+    "3 original Excel hashes unchanged"
+  ]
+}

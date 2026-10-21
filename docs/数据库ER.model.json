@@ -1,0 +1,201 @@
+{
+  "entities": {
+    "organization": [
+      "id PK",
+      "parent_id FK (nullable)",
+      "source_key UK",
+      "name / source_row"
+    ],
+    "employee": [
+      "id PK",
+      "organization_id FK",
+      "source_key UK",
+      "full_name / synthetic"
+    ],
+    "account": [
+      "id PK",
+      "employee_id FK, UK (nullable)",
+      "username UK",
+      "enabled / locked",
+      "version / grants_version"
+    ],
+    "role": [
+      "id PK",
+      "code UK",
+      "name / enabled",
+      "version / grants_version"
+    ],
+    "resource": [
+      "id PK",
+      "parent_id FK (nullable)",
+      "code UK / kind",
+      "name / enabled / version"
+    ],
+    "permission": [
+      "id PK",
+      "resource_id FK",
+      "code UK",
+      "action / enabled / version"
+    ],
+    "user_role": [
+      "account_id PK, FK",
+      "role_id PK, FK"
+    ],
+    "role_permission": [
+      "role_id PK, FK",
+      "permission_id PK, FK"
+    ],
+    "credential": [
+      "account_id PK, FK",
+      "password_hash (BCrypt)",
+      "changed_at"
+    ],
+    "auth_session": [
+      "token_hash PK",
+      "account_id FK",
+      "csrf_token",
+      "created_at / expires_at"
+    ],
+    "source_batch": [
+      "id PK",
+      "kind + file_sha256 UK",
+      "record_count / imported_at"
+    ],
+    "permission_template_source": [
+      "id PK",
+      "source_batch_id FK",
+      "resource_id FK",
+      "source_cell / raw_text",
+      "review_status"
+    ],
+    "change_log": [
+      "id PK",
+      "actor_id FK",
+      "operation / occurred_at"
+    ],
+    "policy_lock": [
+      "id PK (constant 1)"
+    ]
+  },
+  "relations": [
+    [
+      "organization",
+      "o|",
+      "o{",
+      "organization",
+      "parent"
+    ],
+    [
+      "organization",
+      "||",
+      "o{",
+      "employee",
+      "belongs"
+    ],
+    [
+      "employee",
+      "o|",
+      "o|",
+      "account",
+      "optional_link"
+    ],
+    [
+      "account",
+      "||",
+      "o|",
+      "credential",
+      "credential"
+    ],
+    [
+      "account",
+      "||",
+      "o{",
+      "auth_session",
+      "sessions"
+    ],
+    [
+      "account",
+      "||",
+      "o{",
+      "user_role",
+      "assignments"
+    ],
+    [
+      "role",
+      "||",
+      "o{",
+      "user_role",
+      "assignments"
+    ],
+    [
+      "role",
+      "||",
+      "o{",
+      "role_permission",
+      "grants"
+    ],
+    [
+      "permission",
+      "||",
+      "o{",
+      "role_permission",
+      "grants"
+    ],
+    [
+      "resource",
+      "o|",
+      "o{",
+      "resource",
+      "parent"
+    ],
+    [
+      "resource",
+      "||",
+      "o{",
+      "permission",
+      "operations"
+    ],
+    [
+      "source_batch",
+      "o|",
+      "o{",
+      "organization",
+      "source"
+    ],
+    [
+      "source_batch",
+      "o|",
+      "o{",
+      "employee",
+      "source"
+    ],
+    [
+      "source_batch",
+      "o|",
+      "o{",
+      "resource",
+      "source"
+    ],
+    [
+      "source_batch",
+      "||",
+      "o{",
+      "permission_template_source",
+      "templates"
+    ],
+    [
+      "resource",
+      "||",
+      "o{",
+      "permission_template_source",
+      "source"
+    ],
+    [
+      "account",
+      "||",
+      "o{",
+      "change_log",
+      "actor"
+    ]
+  ]
+}

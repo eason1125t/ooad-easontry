@@ -1,0 +1,648 @@
+{
+  "generated_at": "2026-10-20T23:50:02.952989+08:00",
+  "method": "Read-only OOXML scan; merged ranges only; aggregate employee evidence",
+  "sources": {
+    "organizations": {
+      "file": "市政公司部门信息表.xlsx",
+      "bytes": 71646,
+      "sha256": "555ae8cb1a1569dda43cf53c47ee37f4ba4e8964f334ec8f2e1ef73699686c40",
+      "sheets": [
+        {
+          "name": "部门信息",
+          "xml_path": "xl/worksheets/sheet2.xml",
+          "declared_dimension": "A1",
+          "nonempty_extent": "A1:C112",
+          "physical_row_count": 112,
+          "nonempty_cell_count": 335,
+          "merged_range_count": 0,
+          "merged_ranges": [],
+          "formula_cells": [],
+          "error_cells": []
+        }
+      ],
+      "independent_check": {
+        "reader": "openpyxl 3.1.5, read_only + reset_dimensions",
+        "nonempty_rows": 112,
+        "matches_ooxml": true
+      }
+    },
+    "employees": {
+      "file": "市政公司员工信息表.xlsx",
+      "bytes": 559511,
+      "sha256": "66657800a5e2e252c9d1dedfee2dbd54b694e3a5912166c2bac79c8703b20516",
+      "sheets": [
+        {
+          "name": "员工信息",
+          "xml_path": "xl/worksheets/sheet2.xml",
+          "declared_dimension": "A1",
+          "nonempty_extent": "A1:F10001",
+          "physical_row_count": 10001,
+          "nonempty_cell_count": 60006,
+          "merged_range_count": 0,
+          "merged_ranges": [],
+          "formula_cells": [],
+          "error_cells": []
+        }
+      ],
+      "independent_check": {
+        "reader": "openpyxl 3.1.5, read_only + reset_dimensions",
+        "nonempty_rows": 10001,
+        "matches_ooxml": true
+      }
+    },
+    "permissions": {
+      "file": "市政公司应用软件功能权限清单(1).xlsx",
+      "bytes": 77004,
+      "sha256": "13c18de30710cc2867588aa99843c6c388c0a8ee85029f3420f7b4c4c9fad655",
+      "sheets": [
+        {
+          "name": "市政公司应用软件功能权限清单",
+          "xml_path": "xl/worksheets/sheet2.xml",
+          "declared_dimension": "A1",
+          "nonempty_extent": "A1:I361",
+          "physical_row_count": 361,
+          "nonempty_cell_count": 2655,
+          "merged_range_count": 134,
+          "merged_ranges": [
+            "B146:B148",
+            "B162:B166",
+            "B115:B118",
+            "B344:B346",
+            "B84:B86",
+            "B359:B361",
+            "B36:B38",
+            "B207:B209",
+            "B45:B47",
+            "B204:B206",
+            "B256:B258",
+            "B271:B273",
+            "B265:B267",
+            "B305:B307",
+            "A45:A65",
+            "B110:B114",
+            "B320:B322",
+            "B12:B14",
+            "B72:B74",
+            "A170:A187",
+            "B21:B23",
+            "B134:B136",
+            "A280:A301",
+            "B152:B154",
+            "B235:B237",
+            "B244:B246",
+            "B167:B169",
+            "B176:B178",
+            "B347:B349",
+            "B57:B59",
+            "B259:B261",
+            "B210:B212",
+            "B299:B301",
+            "B293:B295",
+            "B308:B310",
+            "B128:B130",
+            "A3:A20",
+            "B250:B252",
+            "B33:B35",
+            "B217:B219",
+            "B99:B101",
+            "B106:B109",
+            "B335:B337",
+            "B155:B158",
+            "B173:B175",
+            "A146:A169",
+            "B201:B203",
+            "B188:B190",
+            "B311:B313",
+            "A323:A340",
+            "B125:B127",
+            "B296:B298",
+            "B131:B133",
+            "B75:B77",
+            "B140:B142",
+            "B149:B151",
+            "B232:B234",
+            "A226:A243",
+            "B326:B328",
+            "B182:B184",
+            "B353:B355",
+            "B39:B41",
+            "B48:B50",
+            "A1:I1",
+            "A33:A44",
+            "A66:A92",
+            "B274:B276",
+            "A302:A322",
+            "B78:B80",
+            "B87:B89",
+            "B314:B316",
+            "B329:B331",
+            "B338:B340",
+            "B15:B17",
+            "B24:B26",
+            "B226:B228",
+            "B102:B105",
+            "A207:A225",
+            "B8:B11",
+            "B51:B53",
+            "A262:A279",
+            "B66:B68",
+            "B302:B304",
+            "B63:B65",
+            "B185:B187",
+            "B277:B279",
+            "B341:B343",
+            "B223:B225",
+            "B350:B352",
+            "B3:B7",
+            "B93:B95",
+            "B238:B240",
+            "B42:B44",
+            "B220:B222",
+            "B247:B249",
+            "B229:B231",
+            "B287:B289",
+            "B253:B255",
+            "B179:B181",
+            "B262:B264",
+            "B213:B216",
+            "B317:B319",
+            "B119:B121",
+            "B290:B292",
+            "B143:B145",
+            "B30:B32",
+            "B241:B243",
+            "B198:B200",
+            "B54:B56",
+            "B356:B358",
+            "A244:A261",
+            "B280:B282",
+            "B122:B124",
+            "B191:B194",
+            "B283:B286",
+            "B159:B161",
+            "B268:B270",
+            "B81:B83",
+            "B96:B98",
+            "B323:B325",
+            "B90:B92",
+            "B332:B334",
+            "A188:A206",
+            "B170:B172",
+            "A93:A127",
+            "B27:B29",
+            "B18:B20",
+            "A21:A32",
+            "B195:B197",
+            "A341:A361",
+            "B60:B62",
+            "B69:B71",
+            "A128:A145",
+            "B137:B139"
+          ],
+          "formula_cells": [],
+          "error_cells": []
+        }
+      ],
+      "independent_check": {
+        "reader": "openpyxl 3.1.5, read_only + reset_dimensions",
+        "nonempty_rows": 361,
+        "matches_ooxml": true
+      }
+    }
+  },
+  "analysis": {
+    "organizations": {
+      "records": 111,
+      "source_range": "A2:C112",
+      "fields": {
+        "A1": "部门名称",
+        "B1": "部门经理",
+        "C1": "上级部门"
+      },
+      "depth_counts": {
+        "1": 1,
+        "2": 20,
+        "3": 90
+      },
+      "root_count": 1,
+      "branch_count": 9,
+      "parent_links": 110,
+      "missing_parent_count": 0,
+      "cycle_count": 0,
+      "empty_fields": {
+        "A": [],
+        "B": [],
+        "C": [
+          "C2"
+        ]
+      },
+      "source_key_present": false
+    },
+    "employees": {
+      "records": 10000,
+      "source_range": "A2:F10001",
+      "fields": {
+        "A1": "姓名",
+        "B1": "用户名",
+        "C1": "分公司",
+        "D1": "部门",
+        "E1": "岗位",
+        "F1": "电话号码"
+      },
+      "empty_field_counts": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0,
+        "E": 0,
+        "F": 0
+      },
+      "name_duplicates": {
+        "group_count": 1596,
+        "affected_records": 3737,
+        "extra_records": 2141,
+        "sample_locations": [
+          [
+            "A4",
+            "A2566"
+          ],
+          [
+            "A5",
+            "A2366",
+            "A4159",
+            "A7064"
+          ],
+          [
+            "A10",
+            "A1754"
+          ],
+          [
+            "A14",
+            "A5190"
+          ],
+          [
+            "A17",
+            "A3399",
+            "A7630"
+          ]
+        ]
+      },
+      "username_duplicates": {
+        "group_count": 0,
+        "affected_records": 0,
+        "extra_records": 0,
+        "sample_locations": []
+      },
+      "normalized_username_duplicates": {
+        "group_count": 0,
+        "affected_records": 0,
+        "extra_records": 0,
+        "sample_locations": []
+      },
+      "username_whitespace_locations": [],
+      "phone_duplicates": {
+        "group_count": 0,
+        "affected_records": 0,
+        "extra_records": 0,
+        "sample_locations": []
+      },
+      "phone_cell_types": {
+        "s": 10000
+      },
+      "organization_unmatched_count": 0,
+      "organization_unmatched_locations": [],
+      "direct_branch_records": 54,
+      "direct_branch_sample_locations": [
+        "C192:D192",
+        "C193:D193",
+        "C194:D194",
+        "C195:D195",
+        "C196:D196",
+        "C197:D197",
+        "C1282:D1282",
+        "C1283:D1283",
+        "C1284:D1284",
+        "C1285:D1285"
+      ],
+      "matched_organization_node_count": 110,
+      "organization_counts": {
+        "公司领导": 10,
+        "综合办公室": 18,
+        "党委工作部": 18,
+        "人力资源部": 18,
+        "财务部": 18,
+        "市场经营部": 18,
+        "工程技术部": 18,
+        "安全质量部": 18,
+        "物资设备部": 18,
+        "审计监察部": 18,
+        "工会办公室": 18,
+        "道路工程分公司": 6,
+        "道路工程分公司-综合办公室": 14,
+        "道路工程分公司-财务部": 14,
+        "道路工程分公司-工程技术部": 14,
+        "道路工程分公司-安全质量部": 14,
+        "道路工程分公司-物资设备部": 14,
+        "道路工程分公司-市场经营部": 14,
+        "道路工程分公司-第一项目经理部": 250,
+        "道路工程分公司-第二项目经理部": 250,
+        "道路工程分公司-第三项目经理部": 250,
+        "道路工程分公司-第四项目经理部": 250,
+        "桥梁工程分公司": 6,
+        "桥梁工程分公司-综合办公室": 14,
+        "桥梁工程分公司-财务部": 14,
+        "桥梁工程分公司-工程技术部": 14,
+        "桥梁工程分公司-安全质量部": 14,
+        "桥梁工程分公司-物资设备部": 14,
+        "桥梁工程分公司-市场经营部": 14,
+        "桥梁工程分公司-第一项目经理部": 250,
+        "桥梁工程分公司-第二项目经理部": 250,
+        "桥梁工程分公司-第三项目经理部": 250,
+        "桥梁工程分公司-第四项目经理部": 250,
+        "隧道工程分公司": 6,
+        "隧道工程分公司-综合办公室": 14,
+        "隧道工程分公司-财务部": 14,
+        "隧道工程分公司-工程技术部": 14,
+        "隧道工程分公司-安全质量部": 14,
+        "隧道工程分公司-物资设备部": 14,
+        "隧道工程分公司-市场经营部": 14,
+        "隧道工程分公司-第一项目经理部": 250,
+        "隧道工程分公司-第二项目经理部": 250,
+        "隧道工程分公司-第三项目经理部": 250,
+        "隧道工程分公司-第四项目经理部": 250,
+        "轨道交通分公司": 6,
+        "轨道交通分公司-综合办公室": 14,
+        "轨道交通分公司-财务部": 14,
+        "轨道交通分公司-工程技术部": 14,
+        "轨道交通分公司-安全质量部": 14,
+        "轨道交通分公司-物资设备部": 14,
+        "轨道交通分公司-市场经营部": 14,
+        "轨道交通分公司-第一项目经理部": 250,
+        "轨道交通分公司-第二项目经理部": 250,
+        "轨道交通分公司-第三项目经理部": 250,
+        "轨道交通分公司-第四项目经理部": 250,
+        "管网工程分公司": 6,
+        "管网工程分公司-综合办公室": 14,
+        "管网工程分公司-财务部": 14,
+        "管网工程分公司-工程技术部": 14,
+        "管网工程分公司-安全质量部": 14,
+        "管网工程分公司-物资设备部": 14,
+        "管网工程分公司-市场经营部": 14,
+        "管网工程分公司-第一项目经理部": 250,
+        "管网工程分公司-第二项目经理部": 250,
+        "管网工程分公司-第三项目经理部": 250,
+        "管网工程分公司-第四项目经理部": 250,
+        "水务工程分公司": 6,
+        "水务工程分公司-综合办公室": 14,
+        "水务工程分公司-财务部": 14,
+        "水务工程分公司-工程技术部": 14,
+        "水务工程分公司-安全质量部": 14,
+        "水务工程分公司-物资设备部": 14,
+        "水务工程分公司-市场经营部": 14,
+        "水务工程分公司-第一项目经理部": 250,
+        "水务工程分公司-第二项目经理部": 250,
+        "水务工程分公司-第三项目经理部": 250,
+        "水务工程分公司-第四项目经理部": 250,
+        "园林绿化分公司": 6,
+        "园林绿化分公司-综合办公室": 14,
+        "园林绿化分公司-财务部": 14,
+        "园林绿化分公司-工程技术部": 14,
+        "园林绿化分公司-安全质量部": 14,
+        "园林绿化分公司-物资设备部": 14,
+        "园林绿化分公司-市场经营部": 14,
+        "园林绿化分公司-第一项目经理部": 250,
+        "园林绿化分公司-第二项目经理部": 250,
+        "园林绿化分公司-第三项目经理部": 250,
+        "园林绿化分公司-第四项目经理部": 250,
+        "照明工程分公司": 6,
+        "照明工程分公司-综合办公室": 14,
+        "照明工程分公司-财务部": 14,
+        "照明工程分公司-工程技术部": 14,
+        "照明工程分公司-安全质量部": 14,
+        "照明工程分公司-物资设备部": 14,
+        "照明工程分公司-市场经营部": 14,
+        "照明工程分公司-第一项目经理部": 250,
+        "照明工程分公司-第二项目经理部": 250,
+        "照明工程分公司-第三项目经理部": 250,
+        "照明工程分公司-第四项目经理部": 250,
+        "市政养护分公司": 6,
+        "市政养护分公司-综合办公室": 14,
+        "市政养护分公司-财务部": 14,
+        "市政养护分公司-工程技术部": 14,
+        "市政养护分公司-安全质量部": 14,
+        "市政养护分公司-物资设备部": 14,
+        "市政养护分公司-市场经营部": 14,
+        "市政养护分公司-第一项目经理部": 250,
+        "市政养护分公司-第二项目经理部": 250,
+        "市政养护分公司-第三项目经理部": 250,
+        "市政养护分公司-第四项目经理部": 250
+      },
+      "independent_employee_id_present": false,
+      "full_row_duplicates": {
+        "group_count": 0,
+        "affected_records": 0,
+        "extra_records": 0,
+        "sample_locations": []
+      }
+    },
+    "permissions": {
+      "records": 359,
+      "source_range": "A3:I361",
+      "header_range": "A2:I2",
+      "fields": {
+        "A2": "软件系统",
+        "B2": "功能模块",
+        "C2": "功能点",
+        "D2": "功能说明",
+        "E2": "系统管理员",
+        "F2": "公司领导",
+        "G2": "部门经理",
+        "H2": "项目经理",
+        "I2": "普通员工"
+      },
+      "application_count": 18,
+      "applications": [
+        "GIS地下管线管理系统",
+        "OA协同办公系统",
+        "人力资源管理系统",
+        "企业即时通讯系统",
+        "企业宣传平台",
+        "企业档案管理系统",
+        "企业知识库管理系统",
+        "合同全生命周期管理系统",
+        "安全生产管理系统",
+        "工地AI视频监控系统",
+        "工程项目管理系统(PMIS)",
+        "成本管控系统",
+        "招投标管理系统",
+        "物资设备管理系统",
+        "移动巡检APP",
+        "系统管理后台",
+        "财务管理系统",
+        "车辆管理系统"
+      ],
+      "application_module_group_count": 115,
+      "feature_path_duplicates": {
+        "group_count": 0,
+        "affected_records": 0,
+        "extra_records": 0,
+        "sample_locations": []
+      },
+      "role_cell_count": 1795,
+      "role_text_counts": {
+        "全部": 359,
+        "查看": 402,
+        "查看/编辑": 201,
+        "查看/审批": 71,
+        "查看/编辑/审批": 27,
+        "查看/新增": 104,
+        "无": 552,
+        "查看/新增/编辑": 4,
+        "查看/导出": 64,
+        "查看/编辑本人": 3,
+        "查看本人": 3,
+        "view/新增": 1,
+        "查看/编辑/导出": 2,
+        "view/编辑/审批": 1,
+        "": 1
+      },
+      "role_text_counts_by_column": {
+        "E": {
+          "全部": 359
+        },
+        "F": {
+          "查看": 252,
+          "查看/审批": 67,
+          "查看/导出": 40
+        },
+        "G": {
+          "查看/编辑": 199,
+          "查看/编辑/审批": 27,
+          "查看": 42,
+          "无": 62,
+          "查看/导出": 24,
+          "查看/审批": 2,
+          "查看/编辑/导出": 2,
+          "view/编辑/审批": 1
+        },
+        "H": {
+          "查看": 73,
+          "无": 198,
+          "查看/新增/编辑": 4,
+          "查看/新增": 81,
+          "查看/审批": 2,
+          "view/新增": 1
+        },
+        "I": {
+          "查看": 35,
+          "查看/新增": 23,
+          "无": 292,
+          "查看/编辑": 2,
+          "查看/编辑本人": 3,
+          "查看本人": 3,
+          "": 1
+        }
+      },
+      "true_blank_role_cells": [
+        "I340"
+      ],
+      "english_role_cells": [
+        {
+          "cell": "H117",
+          "text": "view/新增"
+        },
+        {
+          "cell": "G310",
+          "text": "view/编辑/审批"
+        }
+      ],
+      "data_scope_cells": [
+        {
+          "cell": "I48",
+          "text": "查看/编辑本人"
+        },
+        {
+          "cell": "I54",
+          "text": "查看/编辑本人"
+        },
+        {
+          "cell": "I57",
+          "text": "查看本人"
+        },
+        {
+          "cell": "I58",
+          "text": "查看本人"
+        },
+        {
+          "cell": "I62",
+          "text": "查看本人"
+        },
+        {
+          "cell": "I65",
+          "text": "查看/编辑本人"
+        }
+      ],
+      "all_cell_count": 359,
+      "none_cell_count": 552,
+      "unresolved_group_locations": [],
+      "merged_group_blank_count": 585,
+      "core_requirements": [
+        {
+          "row": 341,
+          "application_anchor": "A341",
+          "module_anchor": "B341",
+          "feature_cell": "C341",
+          "feature": "用户管理",
+          "description_cell": "D341",
+          "description": "支持用户账号创建、编辑、停用、删除、密码重置、账号锁定"
+        },
+        {
+          "row": 342,
+          "application_anchor": "A341",
+          "module_anchor": "B341",
+          "feature_cell": "C342",
+          "feature": "角色管理",
+          "description_cell": "D342",
+          "description": "支持角色创建、角色权限配置、角色用户分配、数据权限设置"
+        },
+        {
+          "row": 343,
+          "application_anchor": "A341",
+          "module_anchor": "B341",
+          "feature_cell": "C343",
+          "feature": "权限配置",
+          "description_cell": "D343",
+          "description": "支持功能权限、数据权限、按钮权限分级配置、权限继承设置"
+        },
+        {
+          "row": 344,
+          "application_anchor": "A341",
+          "module_anchor": "B344",
+          "feature_cell": "C344",
+          "feature": "组织架构管理",
+          "description_cell": "D344",
+          "description": "支持公司、分公司、部门、项目部组织架构配置、层级调整"
+        },
+        {
+          "row": 345,
+          "application_anchor": "A341",
+          "module_anchor": "B344",
+          "feature_cell": "C345",
+          "feature": "人员同步管理",
+          "description_cell": "D345",
+          "description": "支持与HR系统人员数据同步、组织架构变更自动同步"
+        },
+        {
+          "row": 346,
+          "application_anchor": "A341",
+          "module_anchor": "B344",
+          "feature_cell": "C346",
+          "feature": "数据权限范围配置",
+          "description_cell": "D346",
+          "description": "支持按组织架构配置用户数据查看范围、数据隔离"
+        }
+      ]
+    }
+  },
+  "original_hashes_unchanged": true
+}

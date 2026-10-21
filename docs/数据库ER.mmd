@@ -1,0 +1,70 @@
+erDiagram
+    organization o|--o{ organization : parent
+    organization ||--o{ employee : belongs
+    employee o|--o| account : optional_link
+    account ||--o| credential : credential
+    account ||--o{ auth_session : sessions
+    account ||--o{ user_role : assignments
+    role ||--o{ user_role : assignments
+    role ||--o{ role_permission : grants
+    permission ||--o{ role_permission : grants
+    resource o|--o{ resource : parent
+    resource ||--o{ permission : operations
+    source_batch o|--o{ organization : source
+    source_batch o|--o{ employee : source
+    source_batch o|--o{ resource : source
+    source_batch ||--o{ permission_template_source : templates
+    resource ||--o{ permission_template_source : source
+    account ||--o{ change_log : actor
+    organization {
+        bigint id
+        bigint parent_id
+    }
+    employee {
+        bigint id
+        bigint organization_id
+    }
+    account {
+        bigint id
+        bigint employee_id
+    }
+    role {
+        bigint id
+    }
+    resource {
+        bigint id
+        bigint parent_id
+    }
+    permission {
+        bigint id
+        bigint resource_id
+    }
+    user_role {
+        bigint account_id
+        bigint role_id
+    }
+    role_permission {
+        bigint role_id
+        bigint permission_id
+    }
+    credential {
+        bigint account_id
+    }
+    auth_session {
+        bigint account_id
+    }
+    source_batch {
+        bigint id
+    }
+    permission_template_source {
+        bigint id
+        bigint source_batch_id
+        bigint resource_id
+    }
+    change_log {
+        bigint id
+        bigint actor_id
+    }
+    policy_lock {
+        bigint id
+    }

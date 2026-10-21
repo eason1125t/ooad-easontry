@@ -1,0 +1,115 @@
+{
+  "checked_on": "2026-10-21T16:38:45+08:00",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 401,
+      "schema_checked": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/session/login",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/overview",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/roles",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/resources",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/permissions",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts/{id}/roles",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/roles/{id}/permissions",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts/{id}/permissions",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/employees",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/organizations",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/demo/documents",
+      "status": 200,
+      "schema_checked": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/session/logout",
+      "status": 403,
+      "schema_checked": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/session/logout",
+      "status": 204,
+      "schema_checked": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/me",
+      "status": 401,
+      "schema_checked": true
+    }
+  ],
+  "bundled_frontend_assets_checked": 2,
+  "result": "passed"
+}

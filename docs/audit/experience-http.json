@@ -1,0 +1,12 @@
+{
+  "checked_on": "2026-10-21T11:31:54.652949+08:00",
+  "checks": [
+    "exact masked employee #1000",
+    "occupied employee #1",
+    "page 2 and totals",
+    "empty search",
+    "oversized query rejected",
+    "logout"
+  ],
+  "result": "passed"
+}

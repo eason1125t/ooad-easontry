@@ -1,0 +1,105 @@
+﻿市政统一权限管理平台：完整操作流程及实际结果
+执行时间：2026-10-21T13:17:40+08:00
+执行方式：真实运行版本的 HTTP API 演练；管理员与员工使用独立 Cookie 会话。
+地址：http://127.0.0.1:8080；开发库：municipal_access_ooad_dev。
+合成账号：project_admin（管理员）、demo_user（演示）、flow_user（本次演练）；本机密码均为 1234。
+本记录不包含 MySQL 密码、Cookie、CSRF 或任何真实员工明文资料。
+
+01. 检查服务、管理员登录和 30 分钟绝对期限
+  管理员: GET /api/health；预期 HTTP 200，实际 200；通过
+  管理员: POST /api/session/login；预期 HTTP 200，实际 200；通过
+  管理员登录返回到期时刻，距请求开始约 1800.03 秒；规则为固定 1800 秒。
+
+02. 准备合成账号与两个独立角色
+  管理员: GET /api/accounts?q=flow_user；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/3；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/roles；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/4；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/5；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/permissions；预期 HTTP 200，实际 200；通过
+  演练账号 ID=3；角色 A=4、B=5；文档查看权限 ID=13。员工关联为空，不冒认来源员工。
+  管理员: GET /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+
+03. 无角色账号登录；默认拒绝访问
+  演练员工: POST /api/session/login；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/demo/documents；预期 HTTP 403，实际 403；通过
+  错误码：FORBIDDEN；反馈：当前账号没有执行此操作的权限
+  未登录客户端: GET /api/accounts；预期 HTTP 401，实际 401；通过
+  错误码：UNAUTHENTICATED；反馈：会话无效或已到期，请重新登录
+
+04. 为角色 A 分配文档查看权限，再给账号分配角色 A
+  管理员: GET /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/demo/documents；预期 HTTP 200，实际 200；通过
+  员工保持原 Cookie、没有重新登录，立即读取到 2 条合成文档。
+  演练员工: GET /api/accounts；预期 HTTP 403，实际 403；通过
+  错误码：FORBIDDEN；反馈：当前账号没有执行此操作的权限
+
+05. 增加角色 B 的同一权限，验证权限并集去重
+  管理员: GET /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/me；预期 HTTP 200，实际 200；通过
+  两个角色提供同一权限，有效权限只有 1 项。
+
+06. 回收角色 A 的权限，保留角色 B 路径
+  管理员: GET /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/demo/documents；预期 HTTP 200，实际 200；通过
+  结果符合并集规则：仍存在 B 的授权路径，读取继续成功。
+
+07. 回收角色 B 的权限；随后请求立即拒绝
+  管理员: GET /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/demo/documents；预期 HTTP 403，实际 403；通过
+  错误码：FORBIDDEN；反馈：当前账号没有执行此操作的权限
+  演练员工: GET /api/me；预期 HTTP 200，实际 200；通过
+  会话仍有效但权限为空；expiresAt 与原登录完全相同，刷新/授权没有续期。
+
+08. 恢复最小阅读权限，并验证账号停用与会话回收
+  管理员: GET /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/demo/documents；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/accounts?q=flow_user；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/3；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/me；预期 HTTP 401，实际 401；通过
+  错误码：UNAUTHENTICATED；反馈：会话无效或已到期，请重新登录
+  管理员: GET /api/accounts?q=flow_user；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/3；预期 HTTP 200，实际 200；通过
+  演练员工: POST /api/session/login；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/demo/documents；预期 HTTP 200，实际 200；通过
+
+09. 验证最后完整管理员保护及事务回滚
+  管理员: GET /api/accounts?q=project_admin；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/1；预期 HTTP 409，实际 409；通过
+  错误码：LAST_ADMINISTRATOR；反馈：必须保留至少一个有效且具有完整管理权限的账号
+  管理员: GET /api/accounts?q=project_admin；预期 HTTP 200，实际 200；通过
+  管理员保持启用且版本未增加，失败修改已回滚。
+
+10. 验证并发版本冲突与 CSRF
+  管理员: GET /api/roles；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/4；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/4；预期 HTTP 409，实际 409；通过
+  错误码：VERSION_CONFLICT；反馈：配置已经变化，请重新加载后再保存
+  管理员: PUT /api/roles/4；预期 HTTP 403，实际 403；通过
+  错误码：CSRF_REJECTED；反馈：请求校验已失效，请刷新页面后重试
+
+11. 验证退出；保留可复查的最小权限测试账号
+  演练员工: POST /api/session/logout；预期 HTTP 204，实际 204；通过
+  演练员工: GET /api/me；预期 HTTP 401，实际 401；通过
+  错误码：UNAUTHENTICATED；反馈：会话无效或已到期，请重新登录
+  管理员: POST /api/session/logout；预期 HTTP 204，实际 204；通过
+  最终：flow_user 启用、未锁定、无员工关联；仅分配角色 A 和文档查看权限；B 无权限。
+
+自动演练结论：以上全部断言通过。没有批量删除文件、清空库、修改原始 Excel 或更改 MySQL 账号密码。
+精确 1799/1800/1801 秒过期边界由本轮 JUnit 可控时钟验证，未把等待几秒冒充实际等待 30 分钟。

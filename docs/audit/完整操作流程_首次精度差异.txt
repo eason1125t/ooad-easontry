@@ -1,0 +1,66 @@
+﻿市政统一权限管理平台：完整操作流程及实际结果
+执行时间：2026-10-21T08:28:07+08:00
+执行方式：真实运行版本的 HTTP API 演练；管理员与员工使用独立 Cookie 会话。
+地址：http://127.0.0.1:8080；开发库：municipal_access_ooad_dev。
+合成账号：project_admin（管理员）、demo_user（演示）、flow_user（本次演练）；本机密码均为 1234。
+本记录不包含 MySQL 密码、Cookie、CSRF 或任何真实员工明文资料。
+
+01. 检查服务、管理员登录和 30 分钟绝对期限
+  管理员: GET /api/health；预期 HTTP 200，实际 200；通过
+  管理员: POST /api/session/login；预期 HTTP 200，实际 200；通过
+  管理员登录返回到期时刻，距请求开始约 1800.04 秒；规则为固定 1800 秒。
+
+02. 准备合成账号与两个独立角色
+  管理员: GET /api/accounts?q=flow_user；预期 HTTP 200，实际 200；通过
+  管理员: POST /api/accounts；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/roles；预期 HTTP 200，实际 200；通过
+  管理员: POST /api/roles；预期 HTTP 200，实际 200；通过
+  管理员: POST /api/roles；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/permissions；预期 HTTP 200，实际 200；通过
+  演练账号 ID=3；角色 A=4、B=5；文档查看权限 ID=13。员工关联为空，不冒认来源员工。
+  管理员: GET /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+
+03. 无角色账号登录；默认拒绝访问
+  演练员工: POST /api/session/login；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/demo/documents；预期 HTTP 403，实际 403；通过
+  错误码：FORBIDDEN；反馈：当前账号没有执行此操作的权限
+  未登录客户端: GET /api/accounts；预期 HTTP 401，实际 401；通过
+  错误码：UNAUTHENTICATED；反馈：会话无效或已到期，请重新登录
+
+04. 为角色 A 分配文档查看权限，再给账号分配角色 A
+  管理员: GET /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/demo/documents；预期 HTTP 200，实际 200；通过
+  员工保持原 Cookie、没有重新登录，立即读取到 2 条合成文档。
+  演练员工: GET /api/accounts；预期 HTTP 403，实际 403；通过
+  错误码：FORBIDDEN；反馈：当前账号没有执行此操作的权限
+
+05. 增加角色 B 的同一权限，验证权限并集去重
+  管理员: GET /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  管理员: GET /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/accounts/3/roles；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/me；预期 HTTP 200，实际 200；通过
+  两个角色提供同一权限，有效权限只有 1 项。
+
+06. 回收角色 A 的权限，保留角色 B 路径
+  管理员: GET /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/4/permissions；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/demo/documents；预期 HTTP 200，实际 200；通过
+  结果符合并集规则：仍存在 B 的授权路径，读取继续成功。
+
+07. 回收角色 B 的权限；随后请求立即拒绝
+  管理员: GET /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  管理员: PUT /api/roles/5/permissions；预期 HTTP 200，实际 200；通过
+  演练员工: GET /api/demo/documents；预期 HTTP 403，实际 403；通过
+  错误码：FORBIDDEN；反馈：当前账号没有执行此操作的权限
+  演练员工: GET /api/me；预期 HTTP 200，实际 200；通过
+
+演练失败，已停止后续步骤：AssertionError 
