@@ -40,9 +40,14 @@
   "navicat": {
     "unsaved_queries_observed": 2,
     "visible_query": "existing development-database creation SQL",
-    "save_status": "awaiting user confirmation",
+    "save_status": "confirmed saved by user",
     "automation_issue": "failed to activate captured window after one recovery retry",
-    "sql_not_executed": true
+    "sql_not_executed": true,
+    "confirmation_source": "User replied 查询已保存",
+    "confirmed_on": "2026-10-21T19:44:06+08:00",
+    "current_open_windows": 0,
+    "independent_saved_query_file_readback": false,
+    "sql_drafts_in_backup_zip": false
   },
   "platform": {
     "http_schema_checks": 18,
