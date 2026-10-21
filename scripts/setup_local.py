@@ -86,7 +86,7 @@ frame.pack(fill='both', expand=True)
 ttk.Label(frame, text='凭据仅用于本机初始化，不会发送到聊天。', font=('Microsoft YaHei UI', 12)).pack(anchor='w', pady=(0, 8))
 ttk.Label(frame, text='将建立独立测试库、数据库应用/迁移账号和网页管理员。').pack(anchor='w', pady=(0, 14))
 entries = []
-for label, hidden, default in [('MySQL root 密码', True, ''), ('网页管理员用户名', False, 'project_admin'), ('网页管理员密码（至少 12 位）', True, ''), ('演示账号 demo_user 密码（至少 12 位）', True, '')]:
+for label, hidden, default in [('MySQL root 密码', True, ''), ('网页管理员用户名', False, 'project_admin'), ('网页管理员密码（4–64 位）', True, ''), ('演示账号 demo_user 密码（4–64 位）', True, '')]:
     row = ttk.Frame(frame)
     row.pack(fill='x', pady=6)
     ttk.Label(row, text=label, width=31).pack(side='left')
